@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- ✏️ MUDE O TÍTULO DA ABA DO NAVEGADOR AQUI -->
+  <title>Amanda Borges da Fonseca</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg:     #ffffff;
+      --text:   #1a1a1a;
+      --muted:  #888;
+      --accent: #c0392b;
+      --font:   'Instrument Serif', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── NAVEGAÇÃO ── */
+    nav {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 1.6rem 2rem;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    nav a {
+      font-family: var(--font);
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      width: 100%;
+      max-width: 780px;
+      padding: 5rem 2rem 2rem;
+      text-align: center;
+    }
+
+    .hero-small-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+      text-transform: lowercase;
+    }
+
+    /* Cascata de nomes */
+    .name-cascade {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      margin-bottom: 0;
+    }
+    .name-cascade .line {
+      font-family: var(--font);
+      font-style: italic;
+      line-height: 1.08;
+      white-space: nowrap;
+    }
+    .name-cascade .line:nth-child(1) { font-size: clamp(2.6rem, 5.5vw, 4rem);   opacity: 1;    color: var(--text); }
+    .name-cascade .line:nth-child(2) { font-size: clamp(2.2rem, 4.5vw, 3.4rem); opacity: 0.80; color: var(--text); }
+    .name-cascade .line:nth-child(3) { font-size: clamp(1.8rem, 3.8vw, 2.8rem); opacity: 0.62; color: var(--text); }
+    .name-cascade .line:nth-child(4) { font-size: clamp(1.5rem, 3.2vw, 2.3rem); opacity: 0.45; color: var(--text); }
+    .name-cascade .line:nth-child(5) { font-size: clamp(1.2rem, 2.6vw, 1.9rem); opacity: 0.30; color: var(--text); }
+    .name-cascade .line:nth-child(6) { font-size: clamp(1rem,   2.1vw, 1.5rem); opacity: 0.18; color: var(--text); }
+    .name-cascade .line:nth-child(7) { font-size: clamp(0.9rem, 1.7vw, 1.2rem); opacity: 0.08; color: var(--text); }
+
+    /* Foto com halo vermelho e listras */
+    .hero-photo-wrap {
+      margin: -1.5rem auto 0;
+      position: relative;
+      width: 180px;
+      height: 220px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .hero-photo-wrap::before {
+      content: '';
+      position: absolute;
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle, rgba(192,57,43,0.50) 0%, transparent 70%);
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      filter: blur(12px);
+    }
+    .hero-photo-wrap img {
+      position: relative;
+      width: 155px;
+      height: auto;
+      object-fit: cover;
+      -webkit-mask-image: repeating-linear-gradient(
+        to bottom, black 0px, black 5px, transparent 5px, transparent 10px
+      );
+      mask-image: repeating-linear-gradient(
+        to bottom, black 0px, black 5px, transparent 5px, transparent 10px
+      );
+    }
+    .hero-photo-placeholder {
+      position: relative;
+      width: 140px;
+      height: 180px;
+      border: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* Bio */
+    .hero-bio {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.9;
+      text-align: center;
+    }
+
+    /* ── DIVISOR ── */
+    .section-label {
+      margin: 5rem 0 2.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 680px;
+      padding: 0 2rem;
+    }
+    .section-label::before, .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    /* ── LISTA DE POSTS ── */
+    .posts-list {
+      width: 100%;
+      max-width: 680px;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 3rem 0;
+      border-bottom: 1px solid #e8e8e8;
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .post-item:hover { opacity: 0.55; }
+    .post-item:first-child { border-top: 1px solid #e8e8e8; }
+
+    .post-date {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .post-title {
+      font-family: var(--font);
+      font-style: italic;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 0.9rem;
+    }
+    .post-excerpt {
+      font-size: 0.92rem;
+      color: var(--muted);
+      max-width: 460px;
+      line-height: 1.7;
+    }
+    .post-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 1.1rem;
+    }
+
+    /* ── PÁGINA DO POST ── */
+    .article-page {
+      display: none;
+      width: 100%;
+      max-width: 680px;
+      padding: 4rem 2rem 8rem;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .article-page.active { display: flex; }
+    .home-page.hidden    { display: none; }
+
+    .back-link {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 3rem;
+      display: inline-block;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link::before { content: '← '; }
+
+    .article-date {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+    .article-title {
+      font-family: var(--font);
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+      margin-bottom: 3rem;
+    }
+    .article-body {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: #333;
+      max-width: 560px;
+      text-align: left;
+    }
+    .article-body p { margin-bottom: 1.5rem; }
+    .article-body img { width: 100%; margin: 2rem 0; display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 6rem;
+      padding: 2rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid #e8e8e8;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVEGAÇÃO — ✏️ edite os itens do menu -->
+  <nav>
+    <a href="#" onclick="showHome()">início</a>
+    <a href="#posts" onclick="showHome()">posts</a>
+    <a href="#">sobre</a>
+    <a href="#">contato</a>
+  </nav>
+
+  <!-- ════════════════ PÁGINA INICIAL ════════════════ -->
+  <div class="home-page" id="home-page">
+
+    <section class="hero">
+
+      <!-- ✏️ Nome pequeno no topo -->
+      <p class="hero-small-name">amanda borges da fonseca</p>
+
+      <!-- Cascata de nomes — ✏️ troque pelo seu nome -->
+      <div class="name-cascade" aria-hidden="true">
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+        <span class="line">Amanda Borges da Fonseca</span>
+      </div>
+
+      <!-- FOTO — ✏️ instrução abaixo -->
+      <div class="hero-photo-wrap">
+        <!--
+          COMO ADICIONAR SUA FOTO:
+          1. Coloque o arquivo da sua foto na mesma pasta que o index.html
+          2. Nomeie como "foto.jpg" (ou outro nome)
+          3. Substitua a linha abaixo:
+             <img src="foto.jpg" alt="Sua foto" />
+          4. Apague o bloco hero-photo-placeholder
+        -->
+        <div class="hero-photo-placeholder">sua foto aqui</div>
+        <!-- <img src="foto.jpg" alt="Amanda Borges da Fonseca" /> -->
+      </div>
+
+      <!-- BIO — ✏️ edite o texto abaixo -->
+      <div class="hero-bio">
+        <p>oiê,</p>
+        <p>designer não designer</p>
+        <p>mestra em design pela ufrj</p>
+        <p>designer de informação e</p>
+        <p>visualização de dados</p>
+        <p>analista de dados</p>
+      </div>
+
+    </section>
+
+    <div class="section-label" id="posts">posts</div>
+
+    <!-- LISTA DE POSTS — ✏️ copie um bloco .post-item para adicionar novo post -->
+    <div class="posts-list">
+
+      <a class="post-item" href="#" onclick="showArticle('post1'); return false;">
+        <span class="post-date">15 abril 2025</span>
+        <h2 class="post-title">O que é visualização de dados?</h2>
+        <p class="post-excerpt">Uma introdução gentil ao universo de transformar números em imagens que fazem sentido para as pessoas.</p>
+        <span class="post-tag">dados</span>
+      </a>
+
+      <a class="post-item" href="#" onclick="showArticle('post2'); return false;">
+        <span class="post-date">02 março 2025</span>
+        <h2 class="post-title">Design sem diploma</h2>
+        <p class="post-excerpt">Reflexões sobre aprender design fora dos caminhos tradicionais e criar o próprio repertório visual.</p>
+        <span class="post-tag">design</span>
+      </a>
+
+      <a class="post-item" href="#" onclick="showArticle('post3'); return false;">
+        <span class="post-date">10 janeiro 2025</span>
+        <h2 class="post-title">Mestrado: o que ninguém te conta</h2>
+        <p class="post-excerpt">Coisas que aprendi sobre pesquisa acadêmica que só fazem sentido depois que você passa por elas.</p>
+        <span class="post-tag">vida acadêmica</span>
+      </a>
+
+    </div>
+
+  </div><!-- /home-page -->
+
+
+  <!-- ════════════════ POSTS INDIVIDUAIS ════════════════ -->
+
+  <div class="article-page" id="post1">
+    <a class="back-link" href="#" onclick="showHome(); return false;">voltar</a>
+    <p class="article-date">15 abril 2025</p>
+    <h1 class="article-title">O que é visualização de dados?</h1>
+    <div class="article-body">
+      <p>Visualização de dados é a arte de transformar números, tabelas e informações brutas em representações visuais que qualquer pessoa consegue entender de relance.</p>
+      <p>Pense no mapa do metrô: ninguém quer ver uma lista de coordenadas geográficas. Todo mundo quer ver linhas coloridas e círculos que dizem "sai aqui". Isso é visualização de dados.</p>
+      <p>O desafio não é técnico — é de comunicação. Quem é a pessoa que vai ver isso? O que ela precisa decidir? Qual informação é essencial e qual é ruído?</p>
+      <p>✏️ <em>Continue editando este texto com o conteúdo real do seu post!</em></p>
+    </div>
+  </div>
+
+  <div class="article-page" id="post2">
+    <a class="back-link" href="#" onclick="showHome(); return false;">voltar</a>
+    <p class="article-date">02 março 2025</p>
+    <h1 class="article-title">Design sem diploma</h1>
+    <div class="article-body">
+      <p>Há uma crença de que design é uma área fechada para quem tem o diploma certo. Na prática, o design está em todo lugar — em como você organiza um e-mail, em como escolhe as cores de uma apresentação.</p>
+      <p>O que o estudo formal dá, sobretudo, é vocabulário e repertório. Mas repertório pode ser construído de muitas formas.</p>
+      <p>✏️ <em>Continue editando este texto com o conteúdo real do seu post!</em></p>
+    </div>
+  </div>
+
+  <div class="article-page" id="post3">
+    <a class="back-link" href="#" onclick="showHome(); return false;">voltar</a>
+    <p class="article-date">10 janeiro 2025</p>
+    <h1 class="article-title">Mestrado: o que ninguém te conta</h1>
+    <div class="article-body">
+      <p>O mestrado é um processo solitário disfarçado de coletivo. Você vai a seminários, tem um orientador, participa de grupos — mas a escrita acontece sozinha, à 1h da madrugada, com uma dúvida que nenhum artigo responde direito.</p>
+      <p>O que ajuda é perceber que a dúvida faz parte. Pesquisa é, por natureza, ir a lugares onde não há resposta pronta ainda.</p>
+      <p>✏️ <em>Continue editando este texto com o conteúdo real do seu post!</em></p>
+    </div>
+  </div>
+
+
+  <footer>
+    <!-- ✏️ Edite o rodapé -->
+    © 2025 Amanda Borges da Fonseca
+  </footer>
+
+  <script>
+    function showArticle(id) {
+      document.getElementById('home-page').classList.add('hidden');
+      document.querySelectorAll('.article-page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function showHome() {
+      document.getElementById('home-page').classList.remove('hidden');
+      document.querySelectorAll('.article-page').forEach(p => p.classList.remove('active'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
