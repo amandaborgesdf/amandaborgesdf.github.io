@@ -4,27 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Amanda Borges — sobre mim</title>
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #000;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    a {
+    body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .voltar {
       position: fixed;
-      top: 1.2rem;
-      left: 1.5rem;
+      top: 1.2rem; left: 1.5rem;
       color: rgba(255,255,255,.5);
       font-family: 'Averia Serif Libre', serif;
       font-size: .8rem;
@@ -32,18 +19,57 @@
       z-index: 10;
       transition: color .2s;
     }
-
-    a:hover { color: #fff; }
+    .voltar:hover { color: #fff; }
+    .btn-som {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      color: rgba(255,255,255,.8);
+      font-family: 'Averia Serif Libre', serif;
+      font-size: .8rem;
+      font-weight: 300;
+      padding: .5rem 1.2rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      transition: background .2s, opacity .4s;
+    }
+    .btn-som:hover { background: rgba(255,255,255,.25); }
+    .btn-som.hidden { opacity: 0; pointer-events: none; }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <a href="../index.html">← voltar</a>
+  <a href="../index.html" class="voltar">← voltar</a>
 
-  <video autoplay muted loop playsinline>
+  <video id="vid" autoplay muted loop playsinline>
     <source src="sobre.mp4" type="video/mp4">
   </video>
+
+  <button id="btn-ligar" class="btn-som" onclick="ligarSom()">não ta ouvindo?</button>
+  <button id="btn-desligar" class="btn-som hidden" onclick="desligarSom()">desligar som</button>
+
+  <script>
+    const vid = document.getElementById('vid');
+    const btnLigar = document.getElementById('btn-ligar');
+    const btnDesligar = document.getElementById('btn-desligar');
+
+    function ligarSom() {
+      vid.muted = false;
+      vid.play();
+      btnLigar.classList.add('hidden');
+      btnDesligar.classList.remove('hidden');
+    }
+
+    function desligarSom() {
+      vid.muted = true;
+      btnDesligar.classList.add('hidden');
+      btnLigar.classList.remove('hidden');
+    }
+  </script>
 
 </body>
 </html>
