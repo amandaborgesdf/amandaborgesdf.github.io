@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amanda Borges — arquivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff;
+      --text: #434343;
+      --muted: rgba(67,67,67,.4);
+      --border: rgba(67,67,67,.15);
+      --max-width: 860px;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Averia Serif Libre', serif;
+      font-weight: 300;
+      font-size: 14px;
+      padding: 2rem 1.5rem 4rem;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; opacity: .7; }
+    a:hover { opacity: 1; }
+    header {
+      max-width: var(--max-width);
+      margin: 0 auto 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+    .profile { display: flex; align-items: center; gap: 1rem; }
+    .profile-pic {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      opacity: .85;
+    }
+    h1 {
+      font-family: 'Averia Serif Libre', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+    .bio { font-size: .8rem; color: var(--muted); max-width: 480px; line-height: 1.5; }
+    nav { display: flex; gap: 1.2rem; font-size: .75rem; color: var(--muted); }
+    main { max-width: var(--max-width); margin: 0 auto; }
+    .year-group { margin-bottom: 2.5rem; }
+    .year-group h2 {
+      font-family: 'Averia Serif Libre', serif;
+      font-weight: 300;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    .grid-item {
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      background: #1a1a1a;
+    }
+    .grid-item img, .grid-item video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity .2s;
+    }
+    .grid-item:hover img, .grid-item:hover video { opacity: .8; }
+    .badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #overlay.active { display: flex; }
+    #overlay-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: none; border: none;
+      color: var(--muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+      z-index: 10;
+    }
+    #overlay-close:hover { color: var(--text); }
+    .detail {
+      display: none;
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      flex-direction: column;
+      position: relative;
+    }
+    .detail.active { display: flex; }
+    .detail-media {
+      flex: 1; min-height: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .single-media {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .single-media img, .single-media video {
+      max-width: 100%; max-height: 72vh;
+      object-fit: contain; display: block;
+    }
+    .carousel {
+      position: relative; width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+    }
+    .slides-wrapper { flex: 1; overflow: hidden; min-height: 0; }
+    .slides { display: flex; height: 100%; transition: transform .3s ease; }
+    .slide { min-width: 100%; display: flex; align-items: center; justify-content: center; }
+    .slide img, .slide video { max-width: 100%; max-height: 68vh; object-fit: contain; }
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.12); color: #fff; border: none;
+      font-size: 1.4rem; width: 36px; height: 36px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 5; backdrop-filter: blur(4px);
+    }
+    .carousel-btn.prev { left: 10px; }
+    .carousel-btn.next { right: 10px; }
+    .carousel-btn:hover { background: rgba(255,255,255,.25); }
+    .dots { display: flex; justify-content: center; gap: 6px; padding: 8px 0; }
+    .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(255,255,255,.25); cursor: pointer; transition: background .2s;
+    }
+    .dot.active { background: #fff; }
+    .detail-info { padding: 10px 4px 14px; color: rgba(255,255,255,.9); }
+    .detail-info time { font-size: .68rem; color: var(--muted); display: block; margin-bottom: 3px; }
+    .caption { font-size: .8rem; line-height: 1.45; color: rgba(255,255,255,.8); }
+    .overlay-nav { position: absolute; bottom: 12px; right: 0; display: flex; gap: 6px; }
+    .overlay-nav button {
+      background: rgba(255,255,255,.1); color: rgba(255,255,255,.6);
+      border: none; width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; font-size: .95rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .overlay-nav button:hover { background: rgba(255,255,255,.2); }
+    footer {
+      max-width: var(--max-width); margin: 2rem auto 0;
+      padding-top: 1rem; border-top: 1px solid var(--border);
+      font-size: .72rem; color: var(--muted);
+    }
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      .grid { grid-template-columns: 1fr; gap: 2px; }
+      .grid-item { aspect-ratio: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="profile">
+    <img src="media/other/18102334717840247.jpg" alt="Amanda Borges" class="profile-pic">
+    <h1>Amanda Borges</h1>
+  </div>
+  <p class="bio">arquivo pessoal de fotos.</p>
+  <nav>
+    <a href="#">blog</a>
+    <a href="#">arquivo de fotos</a>
+    <a href="#">linkedin</a>
+    <a href="#">portfólio</a>
+  </nav>
+</header>
+
+<main>
+<section class="year-group"><h2>2026</h2><div class="grid"><div class="grid-item" data-index="0">
+            <img src="media/posts/202601/18118129240503374.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div></div></section>
+<section class="year-group"><h2>2025</h2><div class="grid"><div class="grid-item" data-index="1">
+            <img src="media/posts/202512/17955074436037242.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="2">
+            <img src="media/posts/202510/18544550449041751.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="3">
+            <img src="media/posts/202509/17915765406186686.webp" alt="" loading="lazy">
+            
+        </div><div class="grid-item" data-index="4">
+            <img src="media/posts/202507/18027504824705193.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="5">
+            <img src="media/posts/202506/18136655203416440.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="6">
+            <img src="media/posts/202505/17863055946331611.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="7">
+            <img src="media/posts/202503/18057581090318541.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="8">
+            <img src="media/posts/202501/18054407503988868.jpg" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="9">
+            <img src="media/posts/202501/18066992860812969.jpg" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div></div></section>
+<section class="year-group"><h2>2024</h2><div class="grid"><div class="grid-item" data-index="10">
+            <img src="media/posts/202411/17981202965759858.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="11">
+            <img src="media/posts/202410/17882489754147293.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="12">
+            <img src="media/posts/202410/18281944462233612.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="13">
+            <img src="media/posts/202410/17924281436861534.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="14">
+            <img src="media/posts/202409/18060805288663698.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="15">
+            <img src="media/posts/202408/18323426296177609.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="16">
+            <img src="media/posts/202407/18010040624567642.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="17">
+            <img src="media/posts/202407/18026338778224016.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="18">
+            <img src="media/posts/202406/18094762051428259.webp" alt="" loading="lazy">
+            
+        </div><div class="grid-item" data-index="19">
+            <video class="grid-video" muted playsinline preload="none"><source src="media/posts/202406/18025407355973103.mp4"></video>
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="20">
+            <img src="media/posts/202405/18127784011354051.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div><div class="grid-item" data-index="21">
+            <img src="media/posts/202405/17993102183444689.webp" alt="" loading="lazy">
+            <span class="badge badge-multi"><svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></span>
+        </div></div></section>
+
+</main>
+
+<div id="overlay">
+  <button id="overlay-close" onclick="closeOverlay()">&#215;</button>
+  <div class="detail" id="post-0">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202601/18118129240503374.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202601/18053709758391729.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202601/18404771173192420.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202601/18147703033449856.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202601/18052503044422504.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202601/17904024804342998.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2026-01-12T21:48:55">12 jan 2026</time>
+        <p class="caption">fortaleza fim de ano</p>
+      </div>
+      <div class="overlay-nav"><button disabled style="opacity:.3">&#8249;</button><button onclick="goPost(1)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-1">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202512/17955074436037242.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202512/18084479068859765.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202512/18009817868819393.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202512/18086992439070324.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202512/18084140204091359.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-12-02T00:46:38">02 dez 2025</time>
+        <p class="caption">seis meses desde que algumas coisas mudaram</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(0)">&#8249;</button><button onclick="goPost(2)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-2">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202510/18544550449041751.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/18082671079840806.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202510/18044302844453779.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/18096282196687075.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202510/17918952807055275.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18144467176381930.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/17948391621028355.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/17879702184306954.mp4" type="video/mp4"></video></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/18190217965330488.mp4" type="video/mp4"></video></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/18109376674594433.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202510/17883176301403985.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202510/18081270320476200.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202510/18087026593932155.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/17997759050835645.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18111053494507426.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18286094509279153.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18083352692074751.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18044831306441718.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202510/18111065767514352.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-10-26T01:30:06">26 out 2025</time>
+        <p class="caption">pelo contrário, se nada é gráfico, tudo é gráfico</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(1)">&#8249;</button><button onclick="goPost(3)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-3">
+      <div class="detail-media"><div class="single-media"><img src="media/posts/202509/17915765406186686.webp" alt=""></div></div>
+      <div class="detail-info">
+        <time datetime="2025-09-13T03:20:11">13 set 2025</time>
+        
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(2)">&#8249;</button><button onclick="goPost(4)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-4">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202507/18027504824705193.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18065850203231059.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/17971453025770111.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18049481234442083.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18087028354694400.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18071502608285183.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18146445037402485.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/17887536780335395.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/17875866084389431.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18014251943757769.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18072597214990670.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/17862115098387827.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18078249959494715.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/17976926903858043.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202507/18071927945022870.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-08-01T01:30:46">01 ago 2025</time>
+        <p class="caption">e aprendi que se depende sempre
+de tanta muita diferente gente
+
+valeu, sp
+cuide bem da minha gente</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(3)">&#8249;</button><button onclick="goPost(5)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-5">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202506/18136655203416440.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202506/17913905643131690.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-06-21T00:04:46">21 jun 2025</time>
+        <p class="caption">👆🏻👇🏻</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(4)">&#8249;</button><button onclick="goPost(6)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-6">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202505/17863055946331611.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18139488166399942.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18028563080440956.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18065581250480987.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18504860164027588.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18031450613402744.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/18029400293433919.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/17891184504245764.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202505/17877847197219844.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-05-19T20:13:35">19 mai 2025</time>
+        <p class="caption">tímidos registros
+rj | maio de 2025</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(5)">&#8249;</button><button onclick="goPost(7)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-7">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202503/18057581090318541.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18074983183741383.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18361584958126187.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17859384345311645.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18466304875067920.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17866933821339226.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18023234747663810.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18047170769196367.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17856722604329990.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17956172825783553.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18060998320993468.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18054474556930593.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17963759792856086.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/17895686316073311.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18073328056774792.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202503/18032199575311897.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202503/18081321178625734.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-03-06T12:02:36">06 mar 2025</time>
+        <p class="caption">carnaval | março 2025 | sp</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(6)">&#8249;</button><button onclick="goPost(8)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-8">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202501/18054407503988868.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18074985076645079.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18381881371108863.jpg" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-01-02T02:27:18">02 jan 2025</time>
+        <p class="caption">🐛</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(7)">&#8249;</button><button onclick="goPost(9)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-9">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202501/18066992860812969.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18063545233693481.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18067427161785036.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/17847983478353240.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18030654206231613.jpg" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202501/18033905369171912.jpg" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202501/18000616760540034.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2025-01-02T01:26:03">02 jan 2025</time>
+        <p class="caption">parnaíba piauí
+filha do sol do equador</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(8)">&#8249;</button><button onclick="goPost(10)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-10">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202411/17981202965759858.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/17911182756023167.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18044100077120967.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18027987839429291.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18033925556343239.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18253608307262108.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18246233032287924.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/18057833824866680.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/17882731554157056.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202411/17905937231963123.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-11-11T01:24:05">11 nov 2024</time>
+        <p class="caption">passo de tiradentes, mirante do Tietê e pico do urubu☁️☁️
+
+rota top: @pedalhidrografico 
+fotos massa: @bicicletografia</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(9)">&#8249;</button><button onclick="goPost(11)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-11">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202410/17882489754147293.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17961149675696546.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17888256729078770.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18012597125636499.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17965858346802639.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17926690907967574.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18067904356628446.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18046897087966751.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18042018101319113.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17890974138076141.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18073741588581097.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202410/18059750638775755.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-10-21T00:34:00">21 out 2024</time>
+        <p class="caption">08.09.2024 - registro de um dia tão bonito e importante que eu não sei nem dar nome
+
+pelos olhos da talentosa @visentcami 
+
+#vespasnaestrada</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(10)">&#8249;</button><button onclick="goPost(12)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-12">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202410/18281944462233612.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18034772246214432.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18019474637568776.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17974099325638297.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18246161824286121.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202410/18059285581695664.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202410/18112766221416155.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18045221287861073.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18059638357778487.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17850833385302428.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18085297750516166.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-10-13T23:30:18">13 out 2024</time>
+        <p class="caption">Parque Estadual do Juquery - out 2024</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(11)">&#8249;</button><button onclick="goPost(13)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-13">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202410/17924281436861534.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18140820211350665.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18051423403923620.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17870687982197515.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18053562100867360.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18065882506713420.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/17912481167917499.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18022019558237556.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202410/18337085704180892.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202410/18066271213574396.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-10-08T20:32:22">08 out 2024</time>
+        <p class="caption">simpática e bucólica 
+e não estamos falando só de Santana de Parnaíba</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(12)">&#8249;</button><button onclick="goPost(14)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-14">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202409/18060805288663698.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17961886799803831.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17881211340111643.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/18016321301625458.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17908420844938353.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17955225791821907.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17881949541110021.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202409/18044430968057647.mp4" type="video/mp4"></video></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202409/17933999057917082.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202409/17932612706812117.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/17864692614225773.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202409/17944378619853395.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202409/18090309328488534.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202409/18121698028390559.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202409/18040828946023331.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202409/18038456036121937.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202409/18048869287749828.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/18051903340851959.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/18250230355266077.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202409/18061051468707930.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-09-24T01:17:38">24 set 2024</time>
+        <p class="caption">Setembro é o mês depois do meu aniversário, e é difícil superar as expectativas de agosto.
+Mas valeu, setembro, tá sendo massa.</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(13)">&#8249;</button><button onclick="goPost(15)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-15">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202408/18323426296177609.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/17875119678136359.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/18041650309803880.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/18097954384431832.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/18015307904527841.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/17897572503040662.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202408/18004936709401604.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-08-09T02:02:17">09 ago 2024</time>
+        <p class="caption">se me falassem que com 25 anos eu estaria onde eu to agora eu ia acreditar oh. sigo correndo pra chegar num sei aonde e com pressa pra ganhar num sei o que, pq não pode ficar parada né
+sei lá também</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(14)">&#8249;</button><button onclick="goPost(16)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-16">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202407/18010040624567642.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18229093876302864.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18035335442493871.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18021647456112758.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18032054564125466.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18044206456745690.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18031561907278970.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202407/18094524070452292.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202407/18265151602217054.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-07-30T01:50:42">30 jul 2024</time>
+        <p class="caption">julho fortaleza 2024 / monotemática mas bom demais!!!</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(15)">&#8249;</button><button onclick="goPost(17)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-17">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202407/18026338778224016.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/17928030875914421.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18035836400050647.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18038894410982845.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/17863373568183260.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18027056030242878.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18032140723905186.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18011821244600186.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18086595271474745.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202407/18048264775834627.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-07-22T00:28:58">22 jul 2024</time>
+        <p class="caption">experiências amanda em baixa definição e de alta qualidade</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(16)">&#8249;</button><button onclick="goPost(18)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-18">
+      <div class="detail-media"><div class="single-media"><img src="media/posts/202406/18094762051428259.webp" alt=""></div></div>
+      <div class="detail-info">
+        <time datetime="2024-06-20T22:59:19">20 jun 2024</time>
+        
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(17)">&#8249;</button><button onclick="goPost(19)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-19">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202406/18025407355973103.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202406/17945065478814138.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202406/18239804800265392.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202406/17934284519845146.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202406/18025141805154197.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202406/18084442150424755.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202406/18031612004073132.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202406/18079152142486367.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202406/18045429466755236.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-06-04T00:01:52">04 jun 2024</time>
+        <p class="caption">meio maio quase junho</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(18)">&#8249;</button><button onclick="goPost(20)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-20">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202405/18127784011354051.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/18006698741527505.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/18103766677397481.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/18304443262154882.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/18037190332905605.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/18074958817494652.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/17916919538833150.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/17937364232838481.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/17926182761895019.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/17981535524529397.webp" alt="" loading="lazy"></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-05-28T01:12:10">28 mai 2024</time>
+        <p class="caption">bh maio de 2024</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(19)">&#8249;</button><button onclick="goPost(21)">&#8250;</button></div>
+    </div>
+<div class="detail" id="post-21">
+      <div class="detail-media"><div class="carousel">
+          <div class="slides-wrapper"><div class="slides"><div class="slide"><img src="media/posts/202405/17993102183444689.webp" alt="" loading="lazy"></div><div class="slide"><img src="media/posts/202405/17850725859167893.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202405/18297217105093885.mp4" type="video/mp4"></video></div><div class="slide"><img src="media/posts/202405/17997699200349285.webp" alt="" loading="lazy"></div><div class="slide"><video controls playsinline preload="none"><source src="media/posts/202405/18125560792346515.mp4" type="video/mp4"></video></div></div></div>
+          <button class="carousel-btn prev">&#8249;</button>
+          <button class="carousel-btn next">&#8250;</button>
+          <div class="dots"><span class="dot  active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div></div>
+      <div class="detail-info">
+        <time datetime="2024-05-05T20:40:37">05 mai 2024</time>
+        <p class="caption">Tem dias que é a vida</p>
+      </div>
+      <div class="overlay-nav"><button onclick="goPost(20)">&#8249;</button><button disabled style="opacity:.3">&#8250;</button></div>
+    </div>
+</div>
+
+<footer>arquivo pessoal · 22 posts · layout baseado no projeto de <a href="https://insta.spagnuolo.news/" target="_blank">Sérgio Spagnuolo</a></footer>
+
+<script>
+  let currentPost = null;
+  const total = 22;
+
+  document.querySelectorAll('.grid-item').forEach(item => {
+    item.addEventListener('click', () => openPost(+item.dataset.index));
+  });
+
+  function openPost(idx) {
+    if (currentPost !== null)
+      document.getElementById('post-' + currentPost).classList.remove('active');
+    currentPost = idx;
+    document.getElementById('post-' + idx).classList.add('active');
+    document.getElementById('overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function goPost(idx) {
+    if (idx < 0 || idx >= total) return;
+    openPost(idx);
+  }
+
+  function closeOverlay() {
+    if (currentPost !== null)
+      document.getElementById('post-' + currentPost).classList.remove('active');
+    currentPost = null;
+    document.getElementById('overlay').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('overlay')) closeOverlay();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('overlay').classList.contains('active')) return;
+    if (e.key === 'Escape') closeOverlay();
+    if (e.key === 'ArrowRight') goPost(currentPost + 1);
+    if (e.key === 'ArrowLeft') goPost(currentPost - 1);
+  });
+
+  document.querySelectorAll('.carousel').forEach(car => {
+    const slides = car.querySelector('.slides');
+    const dots = car.querySelectorAll('.dot');
+    let cur = 0;
+    function go(n) {
+      cur = n;
+      slides.style.transform = `translateX(${-100 * cur}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+    }
+    car.querySelector('.prev').addEventListener('click', e => { e.stopPropagation(); go(Math.max(0, cur-1)); });
+    car.querySelector('.next').addEventListener('click', e => { e.stopPropagation(); go(Math.min(dots.length-1, cur+1)); });
+    dots.forEach((d, i) => d.addEventListener('click', e => { e.stopPropagation(); go(i); }));
+  });
+</script>
+</body>
+</html>
