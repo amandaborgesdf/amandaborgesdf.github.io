@@ -37,8 +37,8 @@
       overflow: hidden;
     }
 
-    .col-home      { border-right: none; }
-    .col-curriculo { border-right: none; overflow-y: auto; }
+    .col-home      { border-right: 1px solid #e8e8e8; }
+    .col-curriculo { border-right: 1px solid #e8e8e8; overflow-y: auto; }
     .col-portfolio { overflow-y: auto; }
 
     /* ── Camada de revelação genérica (overlay absoluto) ── */
@@ -213,7 +213,7 @@
        COL 2 — currículo
     ════════════════════════════ */
     .cv-conteudo {
-      padding: 0;
+      padding: .5rem 1rem 1rem;
     }
 
     .cv-titulo {
@@ -223,32 +223,32 @@
       letter-spacing: .25em;
       text-transform: uppercase;
       color: #000;
-      padding: .5rem 1rem .3rem;
-      margin-bottom: 0;
+      margin-bottom: .6rem;
     }
     .reveal-overlay .cv-titulo { color: #fff; }
 
-    .cv-secao { margin-bottom: 0; }
+    .cv-secao { margin-bottom: .8rem; }
 
     .cv-secao-label {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-      font-size: .6rem;
+      font-size: .55rem;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: #aaa;
-      padding: .4rem 1rem .1rem;
+      color: #bbb;
+      margin-bottom: .2rem;
+      padding-top: .3rem;
     }
     .reveal-overlay .cv-secao-label { color: #555; }
 
-    .cv-item { margin-bottom: 0; padding: .1rem 1rem .3rem; }
+    .cv-item { margin-bottom: .4rem; }
 
     .cv-item-titulo { 
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-      font-size: .7rem;
-      letter-spacing: .06em;
+      font-size: .62rem;
+      letter-spacing: .05em;
       text-transform: uppercase;
       color: #000;
-      line-height: 1.2;
+      line-height: 1.4;
     }
     .cv-item-titulo a { color: #000; }
     .cv-item-titulo a:hover { color: #000; }
@@ -258,16 +258,16 @@
 
     .cv-item-sub {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-      font-size: .52rem;
-      letter-spacing: .08em;
-      color: #999;
+      font-size: .58rem;
+      letter-spacing: .03em;
+      color: #888;
       line-height: 1.4;
     }
     .reveal-overlay .cv-item-sub { color: #666; }
 
     .cv-item-desc {
       font-size: 10.5px;
-      line-height: 1.3;
+      line-height: 1.4;
       color: #444;
       margin-top: .1rem;
     }
@@ -402,8 +402,8 @@
     @media (max-width: 800px) {
       body { overflow: auto; cursor: default; height: auto; }
       .pagina { grid-template-columns: 1fr; height: auto; }
-      .col-home { border-right: none; border-bottom: none; height: auto; }
-      .col-curriculo { border-right: none; border-bottom: none; }
+      .col-home { border-right: none; border-bottom: 1px solid #e8e8e8; height: auto; }
+      .col-curriculo { border-right: none; border-bottom: 1px solid #e8e8e8; }
       .stack-container { height: auto; }
       .layer { position: relative; height: auto; }
       .reveal-layer, .reveal-overlay { display: none; }
@@ -753,7 +753,7 @@
 </div>
 
 <footer>
-  <div class="footer-col">Amanda Borges da Fonseca · feito com a assistência do Claude</div>
+  <div class="footer-col">Amanda Borges da Fonseca</div>
   <div class="footer-col">currículo</div>
   <div class="footer-col">portfólio</div>
 </footer>
