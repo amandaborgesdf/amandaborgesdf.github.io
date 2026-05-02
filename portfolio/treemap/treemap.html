@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treemap do desmatamento — Amanda Borges</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: #000;
+      font-family: 'Libre Baskerville', Times, serif;
+      font-size: 12px;
+      cursor: crosshair;
+    }
+
+    a { color: #000; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      padding: .5rem 1rem;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .hd-nome {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .7rem;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    .hd-volta {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    .pagina {
+      padding-top: 2.4rem;
+      padding-bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bloco-img img {
+      width: 100%;
+      display: block;
+    }
+
+    .bloco-legenda {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding: .3rem 1rem;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    /* O canvas fica com largura total e escala proporcionalmente */
+    #sketch-container {
+      width: 100%;
+      overflow: hidden;
+      background: #1F1C04;
+    }
+
+    #sketch-container canvas {
+      display: block;
+      /* escala o canvas de 1800px para caber na tela */
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; width: 100%;
+      height: 2rem;
+      border-top: 1px solid #e8e8e8;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 100;
+    }
+
+    .ft-txt {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="hd-nome">Amanda Borges — portfólio</span>
+  <a href="../index.html" class="hd-volta">← voltar</a>
+</header>
+
+<div class="pagina">
+
+  <div class="bloco-img">
+    <img src="Visualização Final (2).jpg" alt="Brasil: Uso e cobertura do solo">
+    <div class="bloco-legenda">visualização final · brasil: uso e cobertura do solo 1985–2024</div>
+  </div>
+
+  <div class="bloco-img">
+    <img src="Section 8.png" alt="Processo do treemap">
+    <div class="bloco-legenda">processo · quatro momentos da construção</div>
+  </div>
+
+  <div id="sketch-container"></div>
+  <div class="bloco-legenda">versão interativa · p5.js · animação 1985–2024</div>
+
+</div>
+
+<footer>
+  <span class="ft-txt">Treemap do desmatamento · 2025</span>
+  <span class="ft-txt">R · Figma · p5.js</span>
+</footer>
+
+<script>
+new p5(function(p) {
+
+  // --- CONFIGURAÇÕES GLOBAIS ---
+  const CANVAS_WIDTH  = 1800;
+  const CANVAS_HEIGHT = 1600;
+  const ANIM_STAGES   = 8;
+  const FRAMES_PER_STAGE   = 50;
+  const FRAMES_TOTAL_IDA   = ANIM_STAGES * FRAMES_PER_STAGE;
+  const ANIM_TOTAL_FRAMES  = FRAMES_TOTAL_IDA * 2;
+
+  let currentFrame = 0;
+  let isReversing  = false;
+
+  const LADO_FLORESTA      = 780;
+  const LADO_AGROPECUARIA  = 405;
+  const LADO_AREANV        = 42;
+  const LADO_NAOFLORESTA   = 229;
+  const LADO_AGUA          = 145;
+
+  let PONTO_ENCONTRO_X, PONTO_ENCONTRO_Y;
+  let imgFloresta, imgAgropecuaria, imgAreaNV, imgNaoFloresta, imgAgua;
+
+  const INDICES_POR_ESTAGIO = [
+    [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],
+    [20,21,22,23,24],[25,26,27,28,29],[30,31,32,33,34],[35,36,37]
+  ];
+
+  const quadradosData = [
+    { nome:"Floresta",     x:0, y:0, l:LADO_FLORESTA,     a:LADO_FLORESTA,
+      imagem:null, variacaoArea:[0,2.67,5.53,8.26,11.09,12.40,13.57,14.87,16.77],
+      ancora:"Inferior Direita",   linha:"Superior Esquerda",
+      valoresPorEstagio:[609,592,575,558,541,533,526,518,507] },
+    { nome:"Agropecuária", x:0, y:0, l:LADO_AGROPECUARIA, a:LADO_AGROPECUARIA,
+      imagem:null, variacaoArea:[0,-10.77,-22.06,-32.71,-43.46,-48.75,-53.77,-58.82,-66.35],
+      ancora:"Inferior Esquerda",  linha:"Superior Direita",
+      valoresPorEstagio:[164,182,200,218,236,244,253,261,273] },
+    { nome:"Urbano",       x:0, y:0, l:LADO_AREANV,       a:LADO_AREANV,
+      imagem:null, variacaoArea:[0,1.24,-7.18,-18.81,-26.17,-31.86,-43.41,-55.22,-68.86],
+      ancora:"Superior Esquerda",  linha:"Inferior Direita",
+      valoresPorEstagio:[3.9,3.9,4.2,4.7,4.9,5.2,5.6,6.1,6.6] },
+    { nome:"Campo",        x:0, y:0, l:LADO_NAOFLORESTA,  a:LADO_NAOFLORESTA,
+      imagem:null, variacaoArea:[0,0.78,4.66,3.24,4.48,6.07,7.61,8.91,11.96],
+      ancora:"Superior Direita",   linha:"Inferior Esquerda",
+      valoresPorEstagio:[53,52,50,51,50,49,49,48,46] },
+    { nome:"Água",         x:0, y:0, l:LADO_AGUA,         a:LADO_AGUA,
+      imagem:null, variacaoArea:[0,4.55,1.70,11.74,11.91,12.28,15.94,16.61,15.46],
+      ancora:"Superior Direita",   linha:"Inferior Esquerda",
+      valoresPorEstagio:[21,20,21,19,19,19,18,18,18] },
+  ];
+
+  // --- PRELOAD ---
+  // As imagens são carregadas aqui. O erro no preview do Claude é normal
+  // (sandbox bloqueia fetch) — no GitHub Pages e localmente funciona.
+  p.preload = function() {
+    imgFloresta     = p.loadImage('floresta_filtro.png', ()=>{}, ()=>{ imgFloresta     = null; });
+    imgAgropecuaria = p.loadImage('agro.png',            ()=>{}, ()=>{ imgAgropecuaria = null; });
+    imgAreaNV       = p.loadImage('areanv.png',          ()=>{}, ()=>{ imgAreaNV       = null; });
+    imgNaoFloresta  = p.loadImage('naofloresta.png',     ()=>{}, ()=>{ imgNaoFloresta  = null; });
+    imgAgua         = p.loadImage('agua.png',            ()=>{}, ()=>{ imgAgua         = null; });
+  };
+
+  // --- SETUP ---
+  p.setup = function() {
+    let cnv = p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    cnv.parent('sketch-container');
+
+    quadradosData[0].imagem = imgFloresta;
+    quadradosData[1].imagem = imgAgropecuaria;
+    quadradosData[2].imagem = imgAreaNV;
+    quadradosData[3].imagem = imgNaoFloresta;
+    quadradosData[4].imagem = imgAgua;
+
+    PONTO_ENCONTRO_X = CANVAS_WIDTH  * 3/5;
+    PONTO_ENCONTRO_Y = CANVAS_HEIGHT * 6/10;
+
+    for (let q of quadradosData) {
+      if (q.variacaoArea.length === ANIM_STAGES) q.variacaoArea.unshift(0);
+    }
+
+    quadradosData[0].x = PONTO_ENCONTRO_X - LADO_FLORESTA;
+    quadradosData[0].y = PONTO_ENCONTRO_Y - LADO_FLORESTA;
+    quadradosData[1].x = PONTO_ENCONTRO_X;
+    quadradosData[1].y = PONTO_ENCONTRO_Y - LADO_AGROPECUARIA;
+    quadradosData[2].x = PONTO_ENCONTRO_X;
+    quadradosData[2].y = PONTO_ENCONTRO_Y;
+    quadradosData[3].x = PONTO_ENCONTRO_X - LADO_NAOFLORESTA;
+    quadradosData[3].y = PONTO_ENCONTRO_Y;
+    quadradosData[4].x = PONTO_ENCONTRO_X - LADO_NAOFLORESTA - LADO_AGUA;
+    quadradosData[4].y = PONTO_ENCONTRO_Y;
+  };
+
+  // --- EASING ---
+  function easeOutQuad(t) { return t; }
+
+  // --- DRAW ---
+  p.draw = function() {
+    p.background("#1F1C04");
+
+    desenharTamanhoOriginalFundo(quadradosData);
+    desenharTamanhoFinalFundo(quadradosData);
+
+    currentFrame++;
+    if (currentFrame >= FRAMES_TOTAL_IDA && !isReversing) {
+      isReversing = true;
+    } else if (currentFrame >= ANIM_TOTAL_FRAMES) {
+      currentFrame = 0;
+      isReversing  = false;
+    }
+
+    let effectiveFrame = isReversing
+      ? ANIM_TOTAL_FRAMES - currentFrame
+      : currentFrame;
+
+    desenharLinhasCentraisFixas();
+    desenharLinhasIniciaisFixas(quadradosData);
+    desenharLinhasFinaisFixas(quadradosData);
+
+    let estadoAtual = desenharQuadradosAnimados(quadradosData, effectiveFrame);
+    desenharLinhasAdaptativas(estadoAtual);
+    desenharNumeroCruzamento(estadoAtual, effectiveFrame);
+  };
+
+  // --- FUNÇÕES AUXILIARES ---
+
+  function desenharTamanhoOriginalFundo(data) {
+    p.push();
+    p.tint(255, 76);
+    p.noStroke();
+    for (let q of data) {
+      if (q.imagem) {
+        p.image(q.imagem, q.x, q.y, q.l, q.a);
+      } else {
+        p.fill(corPlaceholder(q.nome, 76));
+        p.rect(q.x, q.y, q.l, q.a);
+      }
+    }
+    p.pop();
+  }
+
+  function desenharTamanhoFinalFundo(data) {
+    p.push();
+    p.tint(255, 76);
+    p.noStroke();
+    for (let q of data) {
+      let finalVar        = q.variacaoArea[ANIM_STAGES];
+      let finalSideFactor = p.sqrt(1 - (finalVar / 100));
+      let finalL = q.l * finalSideFactor;
+      let finalA = q.a * finalSideFactor;
+      let finalX = q.x, finalY = q.y;
+      if (q.ancora === "Inferior Direita" || q.ancora === "Superior Direita") finalX = q.x + q.l - finalL;
+      if (q.ancora === "Inferior Esquerda" || q.ancora === "Inferior Direita") finalY = q.y + q.a - finalA;
+      if (q.imagem) {
+        p.image(q.imagem, finalX, finalY, finalL, finalA);
+      } else {
+        p.fill(corPlaceholder(q.nome, 76));
+        p.rect(finalX, finalY, finalL, finalA);
+      }
+    }
+    p.pop();
+  }
+
+  function desenharLinhasCentraisFixas() {
+    p.strokeWeight(0.5);
+    p.stroke("#F2F2F2");
+    p.line(0, PONTO_ENCONTRO_Y, CANVAS_WIDTH, PONTO_ENCONTRO_Y);
+    p.line(PONTO_ENCONTRO_X, 0, PONTO_ENCONTRO_X, CANVAS_HEIGHT);
+  }
+
+  function desenharLinhasIniciaisFixas(data) {
+    p.strokeWeight(1);
+    p.stroke("#BF382C");
+    for (let q of data) {
+      let { lineX, lineY } = cantoLinha(q, q.x, q.y, q.l, q.a);
+      p.line(0, lineY, CANVAS_WIDTH, lineY);
+      p.line(lineX, 0, lineX, CANVAS_HEIGHT);
+    }
+  }
+
+  function desenharLinhasFinaisFixas(data) {
+    p.strokeWeight(1);
+    p.stroke(0, 0, 255);
+    for (let q of data) {
+      let finalVar        = q.variacaoArea[ANIM_STAGES];
+      let finalSideFactor = p.sqrt(1 - (finalVar / 100));
+      let finalL = q.l * finalSideFactor;
+      let finalA = q.a * finalSideFactor;
+      let finalX = q.x, finalY = q.y;
+      if (q.ancora === "Inferior Direita" || q.ancora === "Superior Direita") finalX = q.x + q.l - finalL;
+      if (q.ancora === "Inferior Esquerda" || q.ancora === "Inferior Direita") finalY = q.y + q.a - finalA;
+      let { lineX, lineY } = cantoLinha(q, finalX, finalY, finalL, finalA);
+      p.line(0, lineY, CANVAS_WIDTH, lineY);
+      p.line(lineX, 0, lineX, CANVAS_HEIGHT);
+    }
+  }
+
+  function desenharQuadradosAnimados(data, effectiveFrame) {
+    let estadoAtual      = [];
+    let currentStageIndex = p.floor(effectiveFrame / FRAMES_PER_STAGE);
+    let nextStageIndex    = p.min(currentStageIndex + 1, ANIM_STAGES);
+    let stageProgress     = (effectiveFrame % FRAMES_PER_STAGE) / FRAMES_PER_STAGE;
+    let easedProgress     = easeOutQuad(stageProgress);
+
+    for (let q of data) {
+      let varAtual       = q.variacaoArea[currentStageIndex];
+      let varProx        = q.variacaoArea[nextStageIndex];
+      let interpolatedVar = p.lerp(varAtual, varProx, easedProgress);
+      let areaFactor     = 1 - (interpolatedVar / 100);
+      let sideFactor     = p.sqrt(areaFactor);
+      let novaL = q.l * sideFactor;
+      let novaA = q.a * sideFactor;
+      let novaX = q.x, novaY = q.y;
+
+      if (q.ancora === "Inferior Direita" || q.ancora === "Superior Direita") novaX = q.x + q.l - novaL;
+      if (q.ancora === "Inferior Esquerda" || q.ancora === "Inferior Direita") novaY = q.y + q.a - novaA;
+
+      if (q.imagem) {
+        p.image(q.imagem, novaX, novaY, novaL, novaA);
+      } else {
+        p.fill(corPlaceholder(q.nome, 255));
+        p.rect(novaX, novaY, novaL, novaA);
+      }
+
+      p.stroke(0);
+      p.strokeWeight(1);
+      p.noFill();
+      p.rect(novaX, novaY, novaL, novaA);
+      p.noStroke();
+
+      p.fill(255);
+      p.textAlign(p.CENTER, p.CENTER);
+      const BASE_FONT_SIZE = 20;
+      let scaleFactor    = novaL / q.l;
+      let currentFontSize = BASE_FONT_SIZE * scaleFactor;
+      if (currentFontSize > 4) {
+        p.textSize(currentFontSize);
+        p.text(q.nome, novaX + novaL / 2, novaY + novaA / 2);
+      }
+
+      estadoAtual.push({ nome: q.nome, x: novaX, y: novaY, l: novaL, a: novaA, linha: q.linha });
+    }
+    return estadoAtual;
+  }
+
+  function desenharLinhasAdaptativas(estadoAtual) {
+    p.strokeWeight(1);
+    p.stroke(255);
+    for (let q of estadoAtual) {
+      let { lineX, lineY } = cantoLinha(q, q.x, q.y, q.l, q.a);
+      p.line(0, lineY, CANVAS_WIDTH, lineY);
+      p.line(lineX, 0, lineX, CANVAS_HEIGHT);
+    }
+  }
+
+  function desenharNumeroCruzamento(estadoAtual, effectiveFrame) {
+    let currentStageIndex = p.floor(effectiveFrame / FRAMES_PER_STAGE);
+    let nextStageIndex    = p.min(currentStageIndex + 1, ANIM_STAGES);
+    let stageProgress     = (effectiveFrame % FRAMES_PER_STAGE) / FRAMES_PER_STAGE;
+    let cantosComValores  = new Map();
+
+    for (let i = 0; i < estadoAtual.length; i++) {
+      let q         = estadoAtual[i];
+      let qOriginal = quadradosData[i];
+      if (!qOriginal.valoresPorEstagio) continue;
+
+      let valorAtual      = qOriginal.valoresPorEstagio[currentStageIndex];
+      let valorProx       = qOriginal.valoresPorEstagio[nextStageIndex];
+      let valorInterpolado = p.lerp(valorAtual, valorProx, stageProgress);
+      let valorFinal       = p.round(valorInterpolado);
+
+      let { lineX, lineY } = cantoLinha(q, q.x, q.y, q.l, q.a);
+      let chave = `${p.round(lineX)},${p.round(lineY)}`;
+      cantosComValores.set(chave, { valor: valorFinal, nome: q.nome });
+    }
+
+    for (let [chave, dados] of cantosComValores) {
+      let [x, y] = chave.split(',').map(Number);
+      p.fill(255);
+      p.textSize(25);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.text(dados.valor + " M ha", x + 20, y);
+    }
+  }
+
+  // --- HELPERS ---
+  function cantoLinha(q, x, y, l, a) {
+    switch (q.linha) {
+      case "Superior Esquerda": return { lineX: x,     lineY: y     };
+      case "Superior Direita":  return { lineX: x + l, lineY: y     };
+      case "Inferior Direita":  return { lineX: x + l, lineY: y + a };
+      case "Inferior Esquerda": return { lineX: x,     lineY: y + a };
+    }
+  }
+
+  function corPlaceholder(nome, alpha) {
+    switch (nome) {
+      case "Floresta":     return p.color(0,   100, 0,   alpha);
+      case "Agropecuária": return p.color(150, 100, 0,   alpha);
+      case "Urbano":       return p.color(100, 100, 100, alpha);
+      case "Campo":        return p.color(100, 150, 100, alpha);
+      default:             return p.color(0,   0,   150, alpha);
+    }
+  }
+
+});
+</script>
+
+</body>
+</html>

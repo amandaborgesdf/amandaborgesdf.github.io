@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amanda Borges da Fonseca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #ffffff;
+      color: #000;
+      font-family: 'Libre Baskerville', Times, serif;
+      font-size: 12px;
+      line-height: 1.2;
+      height: 100vh;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    a { color: #000; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Layout: home | currículo | portfólio ── */
+    .pagina {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      height: calc(100vh - 2.2rem);
+    }
+
+    /* ── Padrão para colunas com revelação ── */
+    .col-home,
+    .col-curriculo,
+    .col-portfolio {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .col-home      { border-right: none; }
+    .col-curriculo { border-right: none; overflow-y: auto; }
+    .col-portfolio { overflow-y: auto; }
+
+    /* ── Camada de revelação genérica (overlay absoluto) ── */
+    .reveal-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      color: #fff;
+      pointer-events: none;
+      z-index: 10;
+      clip-path: polygon(0 0, 0 0, 0 0); /* invisível por padrão */
+    }
+
+    /* ════════════════════════════
+       COL 1 — home
+    ════════════════════════════ */
+    .stack-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: start start;
+    }
+
+    .layer {
+      grid-area: 1 / 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: .5rem 1rem;
+    }
+
+    .reveal-layer {
+      z-index: 2;
+      color: #ffffff;
+      background-color: #000000;
+      pointer-events: none;
+      clip-path: polygon(0 0, 0 0, 0 0);
+    }
+    .base-layer { z-index: 1; }
+
+    .estatistica {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .35rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: .15rem;
+    }
+    .reveal-layer .estatistica,
+    .reveal-overlay .estatistica { color: #666; }
+
+    h1 {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .75rem;
+      font-weight: 400;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: .3rem;
+    }
+
+    .photo-row {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      margin-bottom: .3rem;
+    }
+
+    .foto-citacao {
+      margin-top: .5rem;
+      font-family: 'Libre Baskerville', Times, serif;
+      font-style: italic;
+      font-size: 10.5px;
+      line-height: 1.4;
+      letter-spacing: .01em;
+    }
+
+    /* Na camada de revelação (preta), tornamos o texto geral invisível */
+.reveal-citacao {
+  color: transparent !important; /* Esconde conectivos e substantivos */
+}
+
+/* Apenas os spans com a classe v-ativo (verbos) serão mostrados */
+.reveal-citacao span.v-ativo {
+  color: #ffffff !important; /* Verbos aparecem em branco no círculo */
+  transition: color 0.3s ease;
+}
+    }
+    .reveal-citacao .citacao-autor {
+      color: #555;
+    }
+
+    /* base-layer: aspas fixas, corpo e autor aparecem só ao clicar */
+    #citacao-base {
+      cursor: pointer;
+      user-select: none;
+    }
+    .aspas-fixed {
+      color: #bbb;
+    }
+    #citacao-base .citacao-corpo,
+    #citacao-base .citacao-autor {
+      color: transparent;
+      transition: color .4s ease;
+    }
+    #citacao-base.visivel .citacao-corpo {
+      color: #888;
+    }
+    #citacao-base.visivel .citacao-autor {
+      color: #aaa;
+    }
+
+    .citacao-autor {
+      display: block;
+      margin-top: .4em;
+      font-style: normal;
+      font-size: 10.5px;
+      
+      color: #aaa;
+    }
+
+    .photo-wrapper {
+      width: 130px;
+      height: 130px;
+      margin-bottom: .3rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .photo-wrapper img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .base-layer img    { filter: grayscale(20%); }
+
+    .foto-citacao a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .foto-citacao a:hover { opacity: .7; }
+    .reveal-layer img  { filter: invert(1) grayscale(1); }
+
+    nav { display: flex; flex-direction: column; gap: 0; }
+    nav a {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .6rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: inherit;
+      line-height: 1.8;
+    }
+    .base-layer nav a  { color: #555; }
+    .reveal-layer nav a { color: #aaa; }
+
+    .base-layer .descricao { display: none; }
+    .reveal-layer .descricao {
+      display: inline;
+      font-family: 'Libre Baskerville', Times, serif;
+      font-style: italic;
+      font-size: .62rem;
+      letter-spacing: .02em;
+      text-transform: none;
+      color: #666;
+      margin-left: .3em;
+    }
+
+    /* ════════════════════════════
+       COL 2 — currículo
+    ════════════════════════════ */
+    .cv-conteudo {
+      padding: 0;
+    }
+
+    .cv-titulo {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .75rem;
+      font-weight: 400;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: #000;
+      padding: .5rem 1rem .3rem;
+      margin-bottom: 0;
+    }
+    .reveal-overlay .cv-titulo { color: #fff; }
+
+    .cv-secao { margin-bottom: 0; }
+
+    .cv-secao-label {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding: .4rem 1rem .1rem;
+    }
+    .reveal-overlay .cv-secao-label { color: #555; }
+
+    .cv-item { margin-bottom: 0; padding: .1rem 1rem .3rem; }
+
+    .cv-item-titulo { 
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .7rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #000;
+      line-height: 1.2;
+    }
+    .cv-item-titulo a { color: #000; }
+    .cv-item-titulo a:hover { color: #000; }
+    .reveal-overlay .cv-item-titulo { color: #fff; }
+    .reveal-overlay .cv-item-titulo a { color: #fff; }
+    .reveal-overlay .cv-item-titulo a:hover { color: #fff; }
+
+    .cv-item-sub {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .08em;
+      color: #999;
+      line-height: 1.4;
+    }
+    .reveal-overlay .cv-item-sub { color: #666; }
+
+    .cv-item-desc {
+      font-size: 10.5px;
+      line-height: 1.3;
+      color: #444;
+      margin-top: .1rem;
+    }
+    .reveal-overlay .cv-item-desc { color: #aaa; }
+
+    /* ════════════════════════════
+       COL 3 — portfólio
+    ════════════════════════════ */
+    .port-conteudo { padding-bottom: 1rem; }
+
+    .port-header { padding: .5rem 1rem .3rem; }
+    .port-titulo {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .75rem;
+      font-weight: 400;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .reveal-overlay .port-titulo { color: #fff; }
+
+    .projeto {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      align-items: start;
+    }
+
+    .proj-img { display: flex; flex-direction: column; }
+
+    .proj-img-box {
+      background: #f7f7f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 90px; height: 90px;
+      flex-shrink: 0;
+    }
+    .reveal-overlay .proj-img-box { background: #1a1a1a; }
+
+    .proj-img img { width: 90px; height: 90px; object-fit: cover; display: block; }
+    .reveal-overlay .proj-img img { filter: invert(1) grayscale(1); }
+
+    .proj-img-placeholder {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #ccc;
+    }
+    .reveal-overlay .proj-img-placeholder { color: #555; }
+
+    .proj-legenda {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .5rem;
+      color: #bbb;
+      line-height: 1.2;
+      padding: .15rem .1rem;
+      max-width: 90px;
+    }
+    .reveal-overlay .proj-legenda { color: #555; }
+
+    .proj-texto {
+      padding: .4rem .5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+    }
+    .proj-numero {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .6rem;
+      letter-spacing: .1em;
+      color: #aaa;
+    }
+    .reveal-overlay .proj-numero { color: #555; }
+
+    .proj-titulo {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .7rem;
+      font-weight: 400;
+      
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .reveal-overlay .proj-titulo { color: #fff; }
+
+    .proj-corpo { font-size: 10.5px; line-height: 1.3; }
+    .proj-corpo + .proj-corpo { margin-top: .1rem; }
+    .reveal-overlay .proj-corpo { color: #aaa; }
+
+    .proj-tools {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .08em;
+      color: #999;
+      text-transform: uppercase;
+      margin-top: auto;
+      padding-top: .25rem;
+    }
+    .reveal-overlay .proj-tools { color: #555; }
+
+    .proj-link {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .58rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-decoration: underline;
+    }
+    .reveal-overlay .proj-link { color: #aaa; }
+
+    /* ── Rodapé fixo ── */
+    footer {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%; height: 2.2rem;
+      border-top: 1px solid #e8e8e8;
+      background: #ffffff;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      z-index: 20;
+    }
+    .footer-col {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .55rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding-left: 1rem;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 800px) {
+      body { overflow: auto; cursor: default; height: auto; }
+      .pagina { grid-template-columns: 1fr; height: auto; }
+      .col-home { border-right: none; border-bottom: none; height: auto; }
+      .col-curriculo { border-right: none; border-bottom: none; }
+      .stack-container { height: auto; }
+      .layer { position: relative; height: auto; }
+      .reveal-layer, .reveal-overlay { display: none; }
+      .col-portfolio { overflow-y: visible; }
+      .projeto { grid-template-columns: 1fr; }
+      .proj-img-box { width: 100%; height: 140px; }
+      footer { grid-template-columns: 1fr; height: auto; padding: .5rem 1rem; }
+      .footer-col + .footer-col { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="pagina">
+
+  <!-- ══════════════════════════
+       COL 1: HOME
+  ══════════════════════════ -->
+  <div class="col-home" id="col-home">
+    <div class="stack-container">
+
+      <div class="layer base-layer">
+        <p class="estatistica">no rj as vezes em sp do piauí e do ceará </p>
+        <h1>Amanda Borges da Fonseca</h1>
+        <div class="photo-row">
+          <div class="photo-wrapper">
+            <img src="media/other/18102334717840247.png" alt="Amanda Borges">
+          </div>
+        </div>
+        <div class="foto-citacao" style="margin-top:.4rem; color:#888; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
+          Curiosamente curiosa e obsessivamente obcecada (só às vezes).
+          Mestranda em Design pela UFRJ, pensando visualização de dados como assistente de pesquisa no NetLab.
+          Estudo o processo criativo em visualização de dados — às vezes IA também.
+          Em outras vidas já fui :
+          <a href="gestora_ambiental.jpg" target="_blank">gestora ambiental pela USP</a> (mas só me sobrou o veganismo e a ansiedade climática),
+          <a href="kpopper.png" target="_blank">kpopper,</a>
+          <a href="atriz de teatro musical.jpg" target="_blank">atriz de teatro musical,</a>
+          <a href="turma do pedal.png" target="_blank"> e da turma do pedal</a>
+        </div>
+        <nav>
+          <a href="sobre/sobre.html">pessoal</a>
+          <a href="blog/blog.html">blog</a>
+          <a href="arquivo de fotos/index.html">fototeca</a>
+        </nav>
+        <div class="foto-citacao" id="citacao-base">
+          <span class="aspas-fixed">"</span><span class="citacao-corpo">A experiência, a possibilidade de que algo nos aconteça ou nos toque, requer um gesto de interrupção, um gesto que é quase impossível nos tempos que correm: requer parar para pensar, parar para olhar, parar para escutar, pensar mais devagar, olhar mais devagar, e escutar mais devagar; parar para sentir, sentir mais devagar, demorar-se nos detalhes, suspender a opinião, suspender o juízo, suspender a vontade, suspender o automatismo da ação, cultivar a atenção e a delicadeza, abrir os olhos e os ouvidos, falar sobre o que nos acontece, aprender a lentidão, escutar aos outros, cultivar a arte do encontro, calar muito, ter paciência e dar-se tempo e espaço."</span> <span class="citacao-autor">— Jorge Larrosa Bondía</span>
+        </div>
+      </div>
+
+      <div class="layer reveal-layer" id="reveal-home">
+        <p class="estatistica">estatisticamente, no Brasil existem cerca de 6 a 7</p>
+        <h1>Amanda Borges da Fonseca</h1>
+        <div class="photo-row">
+          <div class="photo-wrapper">
+            <img src="media/other/18102334717840247.jpg" alt="">
+          </div>
+        </div>
+        <div class="foto-citacao" style="margin-top:.4rem; color:#555; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
+          Curiosamente curiosa e obsessivamente obcecada (só às vezes).
+          Mestranda em Design pela UFRJ, pensando visualização de dados como assistente de pesquisa no NetLab.
+          Estudo o processo criativo em visualização de dados — às vezes IA também.
+          Em outras vidas já fui :
+          <a href="gestora_ambiental.jpg" target="_blank">gestora ambiental pela USP</a> (mas só me sobrou o veganismo e a ansiedade climática),
+          <a href="kpopper.png" target="_blank">kpopper,</a>
+          <a href="atriz de teatro musical.jpg" target="_blank">atriz de teatro musical</a>
+          <a href="turma do pedal.png" target="_blank">e da turma do pedal,</a>
+        </div>
+        <nav>
+          <a>pessoal <span class="descricao">(aqui eu brinco)</span></a>
+          <a>blog <span class="descricao">(aqui eu escrevo)</span></a>
+          <a>fototeca <span class="descricao">(aqui eu registro)</span></a>
+        </nav>
+        <div class="foto-citacao reveal-citacao">
+  "A experiência, a possibilidade de que algo nos aconteça ou nos toque, 
+  <span class="v-ativo">requer</span> <span class="v-ativo">parar</span> para <span class="v-ativo">pensar</span>, 
+  <span class="v-ativo">parar</span> para <span class="v-ativo">olhar</span>, 
+  <span class="v-ativo">parar</span> para <span class="v-ativo">escutar</span>, 
+  <span class="v-ativo">pensar</span> mais devagar, <span class="v-ativo">olhar</span> mais devagar, e 
+  <span class="v-ativo">escutar</span> mais devagar; <span class="v-ativo">parar</span> para <span class="v-ativo">sentir</span>, 
+  <span class="v-ativo">sentir</span> mais devagar, <span class="v-ativo">demorar-se</span> nos detalhes, 
+  <span class="v-ativo">suspender</span> a opinião, <span class="v-ativo">suspender</span> o juízo, 
+  <span class="v-ativo">suspender</span> a vontade, <span class="v-ativo">suspender</span> o automatismo da ação, 
+  <span class="v-ativo">cultivar</span> a atenção e a delicadeza, <span class="v-ativo">abrir</span> os olhos e os ouvidos, 
+  <span class="v-ativo">falar</span> sobre o que nos <span class="v-ativo">acontece</span>, 
+  <span class="v-ativo">aprender</span> a lentidão, <span class="v-ativo">escutar</span> aos outros, 
+  <span class="v-ativo">cultivar</span> a arte do encontro, <span class="v-ativo">calar</span> muito, 
+  <span class="v-ativo">ter</span> paciência e <span class="v-ativo">dar-se</span> tempo e espaço."
+  <span class="citacao-autor">— Jorge Larrosa Bondía</span>
+</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       COL 2: CURRÍCULO
+  ══════════════════════════ -->
+  <div class="col-curriculo" id="col-curriculo">
+
+    <!-- base -->
+    <div class="cv-conteudo">
+
+  <div class="cv-titulo">currículo</div>
+
+  <div class="cv-secao">
+    <div class="cv-secao-label">experiência profissional</div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo"><a href="https://netlab.eco.ufrj.br/" target="_blank">NetLab UFRJ</a></div>
+      <div class="cv-item-sub">Assistente de Pesquisa · 2024 – atual</div>
+      <p class="cv-item-desc">
+        Visualização e análise de dados com datasets de redes sociais. Análises em R, gráficos em R / Rawgraphs, edição no Figma. Automatização de processos de análise e processamento de dados.
+      </p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo"><a href="https://www.nexojornal.com.br/colunistas/autor/amanda-fonseca?user_id=109" target="_blank">Nexo Jornal</a></div>
+      <div class="cv-item-sub">Estagiária de Gráficos · 2023 – 2024</div>
+      <p class="cv-item-desc">
+        Narrativa e visualização de dados. Análises em R e Python, mapas em QGIS, visualizações em R, Rawgraphs, Flourish. Automação de fluxos editoriais de dados.
+      </p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo">Agrotools</div>
+      <div class="cv-item-sub">Analista de Geoprocessamento Jr · 2020 – 2023</div>
+      <p class="cv-item-desc">
+        Monitoramento socioambiental e análise de imagens de satélite com QGIS. Análises em Python e model building. Mapas e relatórios técnicos para visualização de dados geoambientais.
+      </p>
+    </div>
+  </div>
+
+  <div class="cv-secao">
+    <div class="cv-secao-label">formação acadêmica</div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo">Mestrado em Design · PPGD–UFRJ</div>
+      <div class="cv-item-sub">2025 – 2026</div>
+      <p class="cv-item-desc">
+        Criatividade e processo criativo em visualização de dados.
+      </p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo">Iniciação Científica · USP</div>
+      <div class="cv-item-sub">2019 – 2020</div>
+      <p class="cv-item-desc">
+        Análise socioespacial e mapeamento da cobertura da terra via GEOBIA (ArcGIS, eCognition).
+      </p>
+    </div>
+  </div>
+
+  <div class="cv-secao">
+    <div class="cv-secao-label">habilidades & idiomas</div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo">Visualização</div>
+      <p class="cv-item-desc">
+        Data Storytelling, Figma, Adobe Illustrator, p5.js.
+      </p>
+    </div>
+
+    <div class="cv-item">
+      <div class="cv-item-titulo">Dados</div>
+      <p class="cv-item-desc">
+        R, Python, QGIS, ArcGIS, Excel.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+    <!-- overlay triângulo -->
+    <div class="reveal-overlay" id="reveal-curriculo">
+      <div class="cv-conteudo">
+
+        <div class="cv-titulo">currículo</div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">experiência profissional</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo"><a href="https://netlab.eco.ufrj.br/" target="_blank">NetLab UFRJ</a></div>
+            <div class="cv-item-sub">Assistente de Pesquisa · 2024 – atual</div>
+            <p class="cv-item-desc">
+              Visualização e análise de dados com datasets de redes sociais. Análises em R, gráficos em R / Rawgraphs, edição no Figma. Automatização de processos de análise e processamento de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo"><a href="https://www.nexojornal.com.br/colunistas/autor/amanda-fonseca?user_id=109" target="_blank">Nexo Jornal</a></div>
+            <div class="cv-item-sub">Estagiária de Gráficos · 2023 – 2024</div>
+            <p class="cv-item-desc">
+              Narrativa e visualização de dados. Análises em R e Python, mapas em QGIS, visualizações em R, Rawgraphs, Flourish. Automação de fluxos editoriais de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Agrotools</div>
+            <div class="cv-item-sub">Analista de Geoprocessamento Jr · 2020 – 2023</div>
+            <p class="cv-item-desc">
+              Monitoramento socioambiental e análise de imagens de satélite com QGIS. Análises em Python e model building. Mapas e relatórios técnicos para visualização de dados geoambientais.
+            </p>
+          </div>
+        </div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">formação acadêmica</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Mestrado em Design · PPGD–UFRJ</div>
+            <div class="cv-item-sub">2025 – 2026</div>
+            <p class="cv-item-desc">
+              Criatividade e processo criativo em visualização de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Iniciação Científica · USP</div>
+            <div class="cv-item-sub">2019 – 2020</div>
+            <p class="cv-item-desc">
+              Análise socioespacial e mapeamento da cobertura da terra via GEOBIA (ArcGIS, eCognition).
+            </p>
+          </div>
+        </div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">habilidades & idiomas</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Visualização</div>
+            <p class="cv-item-desc">Data Storytelling, Figma, Adobe Illustrator, p5.js.</p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Dados</div>
+            <p class="cv-item-desc">R, Python, QGIS, ArcGIS, Excel.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════
+       COL 3: PORTFÓLIO
+  ══════════════════════════ -->
+  <div class="col-portfolio" id="col-portfolio">
+
+    <!-- base -->
+    <div class="port-conteudo">
+      <div class="port-header"><div class="port-titulo">portfólio</div></div>
+
+      <div class="projeto">
+        <div class="proj-img">
+          <div class="proj-img-box"><img src="treemap_thumb.png" alt=""></div>
+          <div class="proj-legenda">treemap — áreas desmatadas.</div>
+        </div>
+        <div class="proj-texto">
+          <div class="proj-numero">1.</div>
+          <div class="proj-titulo">Treemap uso e cobertura do solo</div>
+          <p class="proj-corpo">Visualização dos dados de uso e cobertura do solo do Brasil ao longo de 40 anos.</p>
+          <div class="proj-tools">R · Figma · p5.js · 2025</div>
+          <a href="/portfolio/treemap/treemap.html" class="proj-link">ver projeto →</a>
+        </div>
+      </div>
+
+      <div class="projeto">
+        <div class="proj-img">
+          <div class="proj-img-box"><img src="cachaca_thumb.png" alt=""></div>
+          <div class="proj-legenda">metrô linha amarela em loop.</div>
+        </div>
+        <div class="proj-texto">
+          <div class="proj-numero">2.</div>
+          <div class="proj-titulo">Cachaça na cabeça e a linha amarela do metrô</div>
+          <p class="proj-corpo">Você encarou a estampa do estofado do metrô da linha amarela de SP quando tava com birita na cabeça? Eu vejo assim.</p>
+          <div class="proj-tools">p5.js · 2025</div>
+          <a href="/portfolio/cachaca/cachaca.html" class="proj-link">ver projeto →</a>
+        </div>
+      </div>
+
+      <div class="projeto">
+        <div class="proj-img">
+          <div class="proj-img-box"><img src="pastagem_thumb.png" alt=""></div>
+        </div>
+        <div class="proj-texto">
+          <div class="proj-numero">3.</div>
+          <div class="proj-titulo">Mapa de degradação de pastagem</div>
+          <p class="proj-corpo">Sabemos que tem áreas de pastagem, mas quanto dela está degradada?</p>
+          <div class="proj-tools">QGIS · Python · MapBiomas · 2023</div>
+          <a href="/portfolio/pastagem/pastagem.html" class="proj-link">ver projeto →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- overlay estrela -->
+    <div class="reveal-overlay" id="reveal-portfolio">
+      <div class="port-conteudo">
+        <div class="port-header"><div class="port-titulo">portfólio</div></div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="treemap_thumb.png" alt=""></div>
+            <div class="proj-legenda">treemap — áreas desmatadas.</div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">1.</div>
+            <div class="proj-titulo">Treemap uso e cobertura do solo</div>
+            <p class="proj-corpo">Visualização dos dados de uso e cobertura do solo do Brasil ao longo de 40 anos.</p>
+            <div class="proj-tools">R · Figma · p5.js · 2025</div>
+            <a href="portfolio/treemap/treemap.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="cachaca_thumb.png" alt=""></div>
+            <div class="proj-legenda">metrô linha amarela em loop.</div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">2.</div>
+            <div class="proj-titulo">Cachaça na cabeça e a linha amarela do metrô</div>
+            <p class="proj-corpo">Você encarou a estampa do estofado do metrô da linha amarela de SP quando tava com birita na cabeça? Eu vejo assim.</p>
+            <div class="proj-tools">p5.js · 2025</div>
+            <a href="/portfolio/cachaca/cachaca.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="pastagem_thumb.png" alt=""></div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">3.</div>
+            <div class="proj-titulo">Mapa de degradação de pastagem</div>
+            <p class="proj-corpo">Sabemos que tem áreas de pastagem, mas quanto dela está degradada?</p>
+            <div class="proj-tools">QGIS · Python · MapBiomas · 2023</div>
+            <a href="/portfolio/pastagem/pastagem.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-col">Amanda Borges da Fonseca · feito com a assistência do Claude</div>
+  <div class="footer-col">currículo</div>
+  <div class="footer-col">portfólio</div>
+</footer>
+
+<script>
+  const revealHome       = document.getElementById('reveal-home');
+  const revealCurriculo  = document.getElementById('reveal-curriculo');
+  const revealPortfolio  = document.getElementById('reveal-portfolio');
+
+  const colHome       = document.getElementById('col-home');
+  const colCurriculo  = document.getElementById('col-curriculo');
+  const colPortfolio  = document.getElementById('col-portfolio');
+
+  const HIDDEN = 'polygon(0px 0px, 0px 0px, 0px 0px)';
+
+  /* ══════════════════════════════════════
+     FORMAS — hover
+  ══════════════════════════════════════ */
+  function circle(x, y, r = 56) {
+    return `circle(${r}px at ${x}px ${y}px)`;
+  }
+
+  function triangle(x, y, r = 60) {
+    const p1 = `${x}px ${y - r}px`;
+    const p2 = `${x - r * 0.866}px ${y + r * 0.5}px`;
+    const p3 = `${x + r * 0.866}px ${y + r * 0.5}px`;
+    return `polygon(${p1}, ${p2}, ${p3})`;
+  }
+
+  function star10(x, y, R = 60, r = 26) {
+    const pts = [];
+    for (let i = 0; i < 20; i++) {
+      const angle  = (i * Math.PI) / 10 - Math.PI / 2;
+      const radius = i % 2 === 0 ? R : r;
+      pts.push(`${x + radius * Math.cos(angle)}px ${y + radius * Math.sin(angle)}px`);
+    }
+    return `polygon(${pts.join(', ')})`;
+  }
+
+  /* ══════════════════════════════════════
+     FORMAS DERRETENDO — para o carimbo
+     melt: 0 = forma original, 1 = completamente derretida
+  ══════════════════════════════════════ */
+  function circleMelt(cx, cy, melt) {
+    // círculo expande e alonga para baixo como gota
+    const R  = 56  + melt * 60;
+    const ry = R   + melt * 80;  // raio vertical cresce mais rápido → gota
+    const pts = [];
+    for (let i = 0; i < 32; i++) {
+      const a = (i / 32) * Math.PI * 2 - Math.PI / 2;
+      // pontos abaixo do centro derretem mais
+      const droop = Math.max(0, Math.sin(a + Math.PI / 2)) * melt * 55;
+      const rx = R  * Math.cos(a);
+      const py = ry * Math.sin(a) + droop;
+      pts.push(`${cx + rx}px ${cy + py}px`);
+    }
+    return `polygon(${pts.join(', ')})`;
+  }
+
+  function triangleMelt(cx, cy, melt) {
+    const r = 75;
+    // topo sobe levemente, base derrete para baixo de forma assimétrica
+    const topY   = cy - r        - melt * 10;
+    const botDrL = cy + r * 0.5  + melt * (r * 1.8);
+    const botDrR = cy + r * 0.5  + melt * (r * 2.2);
+    const spreadL = cx - r * 0.866 - melt * 15;
+    const spreadR = cx + r * 0.866 + melt * 10;
+    return `polygon(${cx}px ${topY}px, ${spreadL}px ${botDrL}px, ${spreadR}px ${botDrR}px)`;
+  }
+
+  function star10Melt(cx, cy, melt) {
+    const R = 75, r = 32;
+    // cada ponta droop com uma velocidade ligeiramente diferente → orgânico
+    const drips = [0, 0.6, 1.2, 0.9, 0.3, 1.0, 0.7, 1.4, 0.5, 0.8];
+    const pts = [];
+    for (let i = 0; i < 20; i++) {
+      const angle  = (i * Math.PI) / 10 - Math.PI / 2;
+      const isOuter = i % 2 === 0;
+      const base   = isOuter ? R : r;
+      const drip   = isOuter ? drips[i / 2] : 0;
+      const extraY = Math.max(0, Math.sin(angle + Math.PI / 2)) * melt * 60 * (1 + drip * 0.5);
+      const px = cx + base * Math.cos(angle);
+      const py = cy + base * Math.sin(angle) + extraY;
+      pts.push(`${px}px ${py}px`);
+    }
+    return `polygon(${pts.join(', ')})`;
+  }
+
+  /* ══════════════════════════════════════
+     CARIMBO — cria e anima ao clicar
+  ══════════════════════════════════════ */
+  function criarCarimbo(clientX, clientY, tipo) {
+    const stamp = document.createElement('div');
+    stamp.style.cssText = `
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      pointer-events: none;
+      z-index: 999;
+    `;
+    document.body.appendChild(stamp);
+
+    const DURACAO  = 1000; // ms total
+    const inicio   = performance.now();
+
+    function clipFrame(t) {
+      // t: 0→1
+      // fase 1 (0–0.12): carimbo aparece rápido (stamp!)
+      // fase 2 (0.12–1): derrete e desaparece
+      const melt = Math.max(0, (t - 0.12) / 0.88);
+      const ease = melt < 0.5
+        ? 2 * melt * melt
+        : 1 - Math.pow(-2 * melt + 2, 2) / 2; // ease in-out quad
+
+      if      (tipo === 'home')      return circleMelt(clientX, clientY, ease);
+      else if (tipo === 'curriculo') return triangleMelt(clientX, clientY, ease);
+      else                           return star10Melt(clientX, clientY, ease);
+    }
+
+    function animar(agora) {
+      const t = Math.min((agora - inicio) / DURACAO, 1);
+      stamp.style.clipPath = clipFrame(t);
+      stamp.style.opacity  = String(1 - Math.pow(t, 1.5));
+
+      if (t < 1) requestAnimationFrame(animar);
+      else       stamp.remove();
+    }
+
+    // aparece instantaneamente na forma original
+    stamp.style.clipPath = clipFrame(0);
+    requestAnimationFrame(animar);
+  }
+
+  /* ══════════════════════════════════════
+     HELPERS
+  ══════════════════════════════════════ */
+  function localPos(e, el) {
+    const r = el.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  function hide(overlay) { overlay.style.clipPath = HIDDEN; }
+
+  /* ══════════════════════════════════════
+     HOVER
+  ══════════════════════════════════════ */
+  colHome.addEventListener('mousemove', (e) => {
+    const { x, y } = localPos(e, colHome);
+    revealHome.style.clipPath = circle(x, y);
+  });
+  colHome.addEventListener('mouseleave', () => hide(revealHome));
+
+  colCurriculo.addEventListener('mousemove', (e) => {
+    const { x, y } = localPos(e, colCurriculo);
+    revealCurriculo.style.clipPath = triangle(x, y);
+  });
+  colCurriculo.addEventListener('mouseleave', () => hide(revealCurriculo));
+
+  colPortfolio.addEventListener('mousemove', (e) => {
+    const { x, y } = localPos(e, colPortfolio);
+    revealPortfolio.style.clipPath = star10(x, y);
+  });
+  colPortfolio.addEventListener('mouseleave', () => hide(revealPortfolio));
+
+  /* ══════════════════════════════════════
+     CLIQUE → CARIMBO
+  ══════════════════════════════════════ */
+  /* ══════════════════════════════════════
+     CITAÇÃO — clique para revelar/esconder
+  ══════════════════════════════════════ */
+  const citacaoBase = document.getElementById('citacao-base');
+  citacaoBase.addEventListener('click', (e) => {
+    e.stopPropagation(); // não dispara o carimbo
+    citacaoBase.classList.toggle('visivel');
+  });
+
+  colHome.addEventListener('click',      (e) => criarCarimbo(e.clientX, e.clientY, 'home'));
+  colCurriculo.addEventListener('click', (e) => criarCarimbo(e.clientX, e.clientY, 'curriculo'));
+  colPortfolio.addEventListener('click', (e) => criarCarimbo(e.clientX, e.clientY, 'portfolio'));
+
+  /* ══════════════════════════════════════
+     GRAFO DE PALAVRAS-CHAVE
+  /* ══════════════════════════════════════
+     REDE SEMÂNTICA
+     hover numa palavra → linhas ligam palavras CONECTADAS por tema
+  ══════════════════════════════════════ */
+  (function () {
+
+    // ── Rede de conexões temáticas ──────────────────────────
+    // Cada entrada: palavra → lista de palavras que ela conecta
+    const REDE = {
+      'mestranda':    ['ufrj', 'pesquisa', 'criatividade', 'processo', 'visualização', 'ia', 'design'],
+      'figma':        ['netlab', 'nexo', 'visualização', 'infográficos', 'mapas'],
+      'dados':        ['r', 'python', 'visualização', 'infográficos', 'qgis', 'netlab'],
+      'processo':     ['criatividade', 'visualização', 'ia', 'mestranda', 'design'],
+      'r':            ['dados', 'python', 'qgis', 'netlab', 'nexo'],
+      'visualização': ['dados', 'figma', 'processo', 'criatividade', 'netlab', 'nexo', 'mestranda'],
+      'criatividade': ['processo', 'mestranda', 'visualização', 'ia', 'design'],
+      'netlab':       ['ufrj', 'dados', 'r', 'visualização', 'pesquisa'],
+      'nexo':         ['figma', 'r', 'python', 'qgis', 'infográficos', 'mapas'],
+      'ufrj':         ['mestranda', 'netlab', 'pesquisa', 'design'],
+      'pesquisa':     ['ufrj', 'netlab', 'criatividade', 'processo', 'mestranda'],
+      'ia':           ['processo', 'criatividade', 'mestranda', 'visualização'],
+      'python':       ['r', 'qgis', 'dados', 'nexo'],
+      'qgis':         ['python', 'r', 'dados', 'nexo', 'mapas'],
+      'infográficos': ['figma', 'nexo', 'dados', 'visualização', 'mapas'],
+      'mapas':        ['qgis', 'nexo', 'infográficos', 'figma'],
+      'design':       ['mestranda', 'ufrj', 'processo', 'criatividade'],
+      'p5.js':        ['processo', 'criatividade', 'visualização', 'figma'],
+    };
+
+    // todas as palavras da rede
+    const TODAS = Object.keys(REDE);
+
+    const LINE_COLOR  = 'rgba(0,0,0,0.12)';
+    const DOT_COLOR   = 'rgba(0,0,0,0.35)';
+    const DOT_HOVERED = 'rgba(0,0,0,0.7)';
+
+    // ── Canvas ──────────────────────────────────────────────
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = `
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 500;
+    `;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // ── Wrap keywords ────────────────────────────────────────
+    function wrapKeywords() {
+      // Regex especial: "R" só como palavra inteira, resto case-insensitive
+      const escapedTerms = TODAS.map(k => {
+        if (k === 'r') return '\\bR\\b';
+        return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      });
+      const pattern = new RegExp(`(${escapedTerms.join('|')})`, 'gi');
+
+      const walker = document.createTreeWalker(
+        document.body, NodeFilter.SHOW_TEXT,
+        { acceptNode(node) {
+            const tag = node.parentElement?.tagName?.toUpperCase();
+            if (['SCRIPT','STYLE','CANVAS'].includes(tag)) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+        }}
+      );
+
+      const textNodes = [];
+      let n;
+      while ((n = walker.nextNode())) textNodes.push(n);
+
+      textNodes.forEach(node => {
+        if (!pattern.test(node.textContent)) return;
+        pattern.lastIndex = 0;
+
+        const frag = document.createDocumentFragment();
+        let last = 0, match;
+
+        while ((match = pattern.exec(node.textContent)) !== null) {
+          // ignora "R" sozinho se não for palavra inteira
+          if (match.index > last)
+            frag.appendChild(document.createTextNode(node.textContent.slice(last, match.index)));
+
+          const span = document.createElement('span');
+          span.className   = 'kw-node';
+          // normaliza: "Mestranda" → "mestranda", "UFRJ" → "ufrj", "R" → "r"
+          const kw = match[0].toLowerCase();
+          span.dataset.keyword = kw;
+          span.textContent = match[0];
+          span.style.cssText = 'cursor: crosshair; transition: opacity .15s;';
+          frag.appendChild(span);
+          last = pattern.lastIndex;
+        }
+
+        if (last < node.textContent.length)
+          frag.appendChild(document.createTextNode(node.textContent.slice(last)));
+
+        node.parentNode.replaceChild(frag, node);
+      });
+    }
+
+    wrapKeywords();
+
+    // ── Helpers ──────────────────────────────────────────────
+    function getNodes(kw) {
+      return [...document.querySelectorAll(`.kw-node[data-keyword="${kw}"]`)];
+    }
+
+    function dotPos(el) {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + 1 };
+    }
+
+    let activeKeyword = null;
+
+    // ── Desenha linhas da palavra hovada → palavras conectadas ──
+    function drawNetwork(hoveredKw, hoveredEl) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const conexoes = REDE[hoveredKw] || [];
+      const origem   = dotPos(hoveredEl);
+
+      conexoes.forEach(kw => {
+        getNodes(kw).forEach(destEl => {
+          const dest = dotPos(destEl);
+          ctx.beginPath();
+          ctx.moveTo(origem.x, origem.y);
+          ctx.lineTo(dest.x, dest.y);
+          ctx.strokeStyle = LINE_COLOR;
+          ctx.lineWidth   = 0.4;
+          ctx.setLineDash([]);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(dest.x, dest.y, 1.4, 0, Math.PI * 2);
+          ctx.fillStyle = DOT_COLOR;
+          ctx.fill();
+        });
+      });
+
+      // ponto na origem
+      ctx.beginPath();
+      ctx.arc(origem.x, origem.y, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = DOT_HOVERED;
+      ctx.fill();
+    }
+
+    function clearAll() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      activeKeyword = null;
+    }
+
+    // ── Eventos ──────────────────────────────────────────────
+    document.addEventListener('mouseover', (e) => {
+      const span = e.target.closest('.kw-node');
+      if (!span) return;
+      activeKeyword = span.dataset.keyword;
+      drawNetwork(activeKeyword, span);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const span = e.target.closest('.kw-node');
+      if (!span) return;
+      const related = e.relatedTarget?.closest('.kw-node');
+      if (!related || related.dataset.keyword !== activeKeyword) clearAll();
+    });
+
+    document.querySelectorAll('.col-curriculo, .col-portfolio').forEach(col => {
+      col.addEventListener('scroll', () => {
+        if (!activeKeyword) return;
+        const hovered = document.querySelector(`.kw-node[data-keyword="${activeKeyword}"]:hover`);
+        if (hovered) drawNetwork(activeKeyword, hovered);
+        else clearAll();
+      });
+    });
+
+  })();
+</script>
+
+</body>
+</html>

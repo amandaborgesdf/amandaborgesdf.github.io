@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cachaça na cabeça — Amanda Borges</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: #000;
+      font-family: 'Libre Baskerville', Times, serif;
+      font-size: 12px;
+      cursor: crosshair;
+      overflow: hidden;
+    }
+
+    a { color: #000; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      padding: .5rem 1rem;
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .hd-nome {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .7rem;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .hd-volta {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .6rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* sketch ocupa a tela toda */
+    #sketch-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #sketch-container canvas {
+      display: block;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; width: 100%;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      z-index: 100;
+    }
+
+    .ft-txt {
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: .52rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="hd-nome">Cachaça na cabeça e a linha amarela do metro</span>
+  <a href="../index.html" class="hd-volta">← voltar</a>
+</header>
+
+<div id="sketch-container"></div>
+
+<footer>
+  <span class="ft-txt">Cachaça na cabeça e a linha amarela do metrô · 2025</span>
+  <span class="ft-txt">clique para inverter · p5.js</span>
+</footer>
+
+<script>
+new p5(function(p) {
+
+  let CELL_WIDTH  = 70;
+  let CELL_HEIGHT = 10;
+
+  let scrollSpeed    = 0.6;
+  let waveAmplitude  = 9;
+  let waveFrequency  = 0.01;
+  let waveTimeSpeed  = 0.05;
+
+  const COLORS = [];
+  let COLOR_BLACK, COLOR_YELLOW, COLOR_BROWN, COLOR_ORANGE;
+  let repeatingUnit = [];
+
+  p.setup = function() {
+    let cnv = p.createCanvas(p.windowWidth, p.windowHeight);
+    cnv.parent('sketch-container');
+    p.noStroke();
+
+    COLOR_BLACK  = p.color(30,  15,  0);
+    COLOR_YELLOW = p.color(218, 165, 32);
+    COLOR_BROWN  = p.color(139, 69,  19);
+    COLOR_ORANGE = p.color(255, 140, 0);
+
+    COLORS.push(COLOR_BLACK, COLOR_YELLOW, COLOR_BROWN, COLOR_ORANGE);
+
+    generateRepeatingUnit();
+  };
+
+  p.windowResized = function() {
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    generateRepeatingUnit();
+  };
+
+  function generateRepeatingUnit() {
+    repeatingUnit = [];
+    const numRowsInUnit = p.floor(p.height / CELL_HEIGHT);
+
+    let prevColAIndex = -1;
+    let prevColBIndex = -1;
+
+    for (let y = 0; y < numRowsInUnit; y++) {
+      let colA_Available = [0,1,2,3];
+      if (prevColAIndex !== -1) colA_Available = colA_Available.filter(i => i !== prevColAIndex);
+      let colA_Index = p.random(colA_Available);
+
+      let colB_Available = [0,1,2,3].filter(i => i !== colA_Index);
+      if (prevColBIndex !== -1) colB_Available = colB_Available.filter(i => i !== prevColBIndex);
+      if (colB_Available.length === 0) colB_Available = [0,1,2,3].filter(i => i !== colA_Index);
+      let colB_Index = p.random(colB_Available);
+
+      repeatingUnit.push({ colA: colA_Index, colB: colB_Index });
+
+      prevColAIndex = colA_Index;
+      prevColBIndex = colB_Index;
+    }
+  }
+
+  p.mousePressed = function() {
+    generateRepeatingUnit();
+    scrollSpeed *= -1;
+  };
+
+  p.draw = function() {
+    p.fill(139, 69, 19, 20);
+    p.rect(0, 0, p.width, p.height);
+
+    let baseScroll = (p.frameCount * scrollSpeed) % p.height;
+
+    const numRowsDisplay = p.floor(p.height / CELL_HEIGHT);
+    const numColsDisplay = p.floor(p.width  / CELL_WIDTH);
+
+    for (let x = 0; x < numColsDisplay; x++) {
+      const colX_base = x * CELL_WIDTH;
+
+      let verticalScrollDirection = (x % 2 === 0) ? 1 : -1;
+      let currentVerticalScroll   = baseScroll * verticalScrollDirection;
+      if (currentVerticalScroll < 0) currentVerticalScroll += p.height;
+
+      p.push();
+      p.translate(colX_base, currentVerticalScroll);
+
+      for (let drawCopy = 0; drawCopy < 2; drawCopy++) {
+        if (drawCopy === 1) {
+          let offsetDirection = (verticalScrollDirection * (scrollSpeed > 0 ? 1 : -1) > 0) ? -p.height : p.height;
+          p.translate(0, offsetDirection);
+        }
+
+        for (let y = -numRowsDisplay; y < numRowsDisplay * 2; y++) {
+          const rowY_base = y * CELL_HEIGHT;
+
+          let colorIndexInUnit = (y % repeatingUnit.length + repeatingUnit.length) % repeatingUnit.length;
+          let colorPair  = repeatingUnit[colorIndexInUnit];
+          let currentColor = (x % 2 === 0) ? COLORS[colorPair.colA] : COLORS[colorPair.colB];
+
+          let waveOffset = p.sin(
+            (rowY_base * waveFrequency) +
+            (p.frameCount * waveTimeSpeed) +
+            (x * 0.5)
+          ) * waveAmplitude;
+
+          p.fill(currentColor);
+          p.rect(waveOffset, rowY_base, CELL_WIDTH, CELL_HEIGHT);
+        }
+      }
+
+      p.pop();
+    }
+
+    p.filter(p.BLUR, 2);
+  };
+
+});
+</script>
+
+</body>
+</html>

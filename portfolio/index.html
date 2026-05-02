@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amanda Borges — portfólio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --text: #434343;
+      --muted: rgba(67,67,67,.45);
+      --border: rgba(67,67,67,.12);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Averia Serif Libre', serif;
+      font-weight: 300;
+      font-size: 15px;
+      padding: 3rem 2rem 5rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .voltar {
+      display: inline-block;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      transition: color .15s;
+    }
+    .voltar:hover { color: var(--text); }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: .4rem;
+    }
+
+    .subtitulo {
+      font-size: .85rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
+
+    /* ── Projeto ── */
+    .projeto {
+      border-top: 1px solid var(--border);
+      padding: 1.8rem 0;
+    }
+
+    .projeto:last-child {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .projeto-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: .6rem;
+    }
+
+    .projeto-titulo {
+      font-size: 1.05rem;
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.3;
+    }
+
+    .projeto-ano {
+      font-size: .72rem;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .projeto-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: 1rem;
+    }
+
+    .tag {
+      font-size: .68rem;
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: .15rem .6rem;
+      color: var(--muted);
+      letter-spacing: .02em;
+    }
+
+    .projeto-link {
+      font-size: .78rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px;
+      transition: color .15s, border-color .15s;
+    }
+
+    .projeto-link:hover {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .placeholder {
+      opacity: .4;
+      font-style: italic;
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: .72rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../index.html" class="voltar">← voltar</a>
+
+  <h1>portfólio</h1>
+  <p class="subtitulo">alguns projetos que valem a pena ver.</p>
+
+  <!-- Projeto 1 -->
+  <div class="projeto">
+    <div class="projeto-header">
+      <h2 class="projeto-titulo">treemap do desmatamento</h2>
+      <span class="projeto-ano">2025</span>
+    </div>
+    <p class="projeto-desc">
+      visualização de dados sobre desmatamento usando treemap — onde a forma da floresta e a forma do gráfico se encontram.
+      acompanha um artigo sobre o processo criativo por trás do projeto.
+    </p>
+    <div class="tags">
+      <span class="tag">R</span>
+      <span class="tag">Figma</span>
+      <span class="tag">p5.js</span>
+      <span class="tag">visualização de dados</span>
+      <span class="tag">processo criativo</span>
+    </div>
+    <a href="#" class="projeto-link">ver projeto →</a>
+  </div>
+
+  <!-- Projeto 2 -->
+  <div class="projeto">
+    <div class="projeto-header">
+      <h2 class="projeto-titulo">cachaça na cabeça e a linha amarela do metrô</h2>
+      <span class="projeto-ano">2025</span>
+    </div>
+    <p class="projeto-desc">
+      a estampa do estofado do metrô linha amarela em movimento vertical — aquela sensação de ver tudo girando depois de um drinque a mais.
+    </p>
+    <div class="tags">
+      <span class="tag">p5.js</span>
+      <span class="tag">programação criativa</span>
+    </div>
+    <a href="#" class="projeto-link">ver projeto →</a>
+  </div>
+
+  <!-- Projeto 3 -->
+  <div class="projeto placeholder">
+    <div class="projeto-header">
+      <h2 class="projeto-titulo">em breve</h2>
+      <span class="projeto-ano">2025</span>
+    </div>
+    <p class="projeto-desc">
+      um novo projeto chegando.
+    </p>
+  </div>
+
+  <footer>Amanda Borges · <a href="../index.html">início</a></footer>
+
+</body>
+</html>
