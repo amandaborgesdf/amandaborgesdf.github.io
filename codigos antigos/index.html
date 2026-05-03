@@ -46,8 +46,8 @@
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: #fff;
-      mix-blend-mode: difference;
+      background: #000;
+      color: #fff;
       pointer-events: none;
       z-index: 10;
       clip-path: polygon(0 0, 0 0, 0 0); /* invisível por padrão */
@@ -92,7 +92,8 @@
       color: #aaa;
       margin-bottom: .15rem;
     }
-    .reveal-layer .estatistica { color: #666; }
+    .reveal-layer .estatistica,
+    .reveal-overlay .estatistica { color: #666; }
 
     h1 {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -135,12 +136,25 @@
       color: #555;
     }
 
-    /* base-layer: citação sempre visível */
+    /* base-layer: aspas fixas, corpo e autor aparecem só ao clicar */
+    #citacao-base {
+      cursor: pointer;
+      user-select: none;
+    }
     .aspas-fixed {
       color: #bbb;
     }
-    #citacao-base .citacao-corpo { color: #888; }
-    #citacao-base .citacao-autor { color: #aaa; }
+    #citacao-base .citacao-corpo,
+    #citacao-base .citacao-autor {
+      color: transparent;
+      transition: color .4s ease;
+    }
+    #citacao-base.visivel .citacao-corpo {
+      color: #888;
+    }
+    #citacao-base.visivel .citacao-autor {
+      color: #aaa;
+    }
 
     .citacao-autor {
       display: block;
@@ -212,7 +226,7 @@
       padding: .5rem 1rem .3rem;
       margin-bottom: 0;
     }
-
+    .reveal-overlay .cv-titulo { color: #fff; }
 
     .cv-secao { margin-bottom: 0; }
 
@@ -224,7 +238,7 @@
       color: #aaa;
       padding: .4rem 1rem .1rem;
     }
-
+    .reveal-overlay .cv-secao-label { color: #555; }
 
     .cv-item { margin-bottom: 0; padding: .1rem 1rem .3rem; }
 
@@ -238,7 +252,9 @@
     }
     .cv-item-titulo a { color: #000; }
     .cv-item-titulo a:hover { color: #000; }
-
+    .reveal-overlay .cv-item-titulo { color: #fff; }
+    .reveal-overlay .cv-item-titulo a { color: #fff; }
+    .reveal-overlay .cv-item-titulo a:hover { color: #fff; }
 
     .cv-item-sub {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -247,7 +263,7 @@
       color: #999;
       line-height: 1.4;
     }
-
+    .reveal-overlay .cv-item-sub { color: #666; }
 
     .cv-item-desc {
       font-size: 10.5px;
@@ -255,7 +271,7 @@
       color: #444;
       margin-top: .1rem;
     }
-
+    .reveal-overlay .cv-item-desc { color: #aaa; }
 
     /* ════════════════════════════
        COL 3 — portfólio
@@ -271,7 +287,7 @@
       text-transform: uppercase;
       color: #000;
     }
-
+    .reveal-overlay .port-titulo { color: #fff; }
 
     .projeto {
       display: grid;
@@ -289,7 +305,10 @@
       width: 90px; height: 90px;
       flex-shrink: 0;
     }
+    .reveal-overlay .proj-img-box { background: #1a1a1a; }
+
     .proj-img img { width: 90px; height: 90px; object-fit: cover; display: block; }
+    .reveal-overlay .proj-img img { filter: invert(1) grayscale(1); }
 
     .proj-img-placeholder {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -298,6 +317,7 @@
       text-transform: uppercase;
       color: #ccc;
     }
+    .reveal-overlay .proj-img-placeholder { color: #555; }
 
     .proj-legenda {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -307,6 +327,7 @@
       padding: .15rem .1rem;
       max-width: 90px;
     }
+    .reveal-overlay .proj-legenda { color: #555; }
 
     .proj-texto {
       padding: .4rem .5rem;
@@ -320,6 +341,7 @@
       letter-spacing: .1em;
       color: #aaa;
     }
+    .reveal-overlay .proj-numero { color: #555; }
 
     .proj-titulo {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -329,9 +351,11 @@
       text-transform: uppercase;
       line-height: 1.2;
     }
+    .reveal-overlay .proj-titulo { color: #fff; }
 
     .proj-corpo { font-size: 10.5px; line-height: 1.3; }
     .proj-corpo + .proj-corpo { margin-top: .1rem; }
+    .reveal-overlay .proj-corpo { color: #aaa; }
 
     .proj-tools {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -342,6 +366,7 @@
       margin-top: auto;
       padding-top: .25rem;
     }
+    .reveal-overlay .proj-tools { color: #555; }
 
     .proj-link {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -350,6 +375,7 @@
       text-transform: uppercase;
       text-decoration: underline;
     }
+    .reveal-overlay .proj-link { color: #aaa; }
 
     /* ── Rodapé fixo ── */
     footer {
@@ -432,7 +458,7 @@
         <h1>Amanda Borges da Fonseca</h1>
         <div class="photo-row">
           <div class="photo-wrapper">
-            <img src="media/other/18102334717840247.png" alt="">
+            <img src="media/other/18102334717840247.jpg" alt="">
           </div>
         </div>
         <div class="foto-citacao" style="margin-top:.4rem; color:#555; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
@@ -552,7 +578,75 @@
 </div>
 
     <!-- overlay triângulo -->
-    <div class="reveal-overlay" id="reveal-curriculo"></div>
+    <div class="reveal-overlay" id="reveal-curriculo">
+      <div class="cv-conteudo">
+
+        <div class="cv-titulo">currículo</div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">experiência profissional</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo"><a href="https://netlab.eco.ufrj.br/" target="_blank">NetLab UFRJ</a></div>
+            <div class="cv-item-sub">Assistente de Pesquisa · 2024 – atual</div>
+            <p class="cv-item-desc">
+              Visualização e análise de dados com datasets de redes sociais. Análises em R, gráficos em R / Rawgraphs, edição no Figma. Automatização de processos de análise e processamento de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo"><a href="https://www.nexojornal.com.br/colunistas/autor/amanda-fonseca?user_id=109" target="_blank">Nexo Jornal</a></div>
+            <div class="cv-item-sub">Estagiária de Gráficos · 2023 – 2024</div>
+            <p class="cv-item-desc">
+              Narrativa e visualização de dados. Análises em R e Python, mapas em QGIS, visualizações em R, Rawgraphs, Flourish. Automação de fluxos editoriais de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Agrotools</div>
+            <div class="cv-item-sub">Analista de Geoprocessamento Jr · 2020 – 2023</div>
+            <p class="cv-item-desc">
+              Monitoramento socioambiental e análise de imagens de satélite com QGIS. Análises em Python e model building. Mapas e relatórios técnicos para visualização de dados geoambientais.
+            </p>
+          </div>
+        </div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">formação acadêmica</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Mestrado em Design · PPGD–UFRJ</div>
+            <div class="cv-item-sub">2025 – 2026</div>
+            <p class="cv-item-desc">
+              Criatividade e processo criativo em visualização de dados.
+            </p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Iniciação Científica · USP</div>
+            <div class="cv-item-sub">2019 – 2020</div>
+            <p class="cv-item-desc">
+              Análise socioespacial e mapeamento da cobertura da terra via GEOBIA (ArcGIS, eCognition).
+            </p>
+          </div>
+        </div>
+
+        <div class="cv-secao">
+          <div class="cv-secao-label">habilidades & idiomas</div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Visualização</div>
+            <p class="cv-item-desc">Data Storytelling, Figma, Adobe Illustrator, p5.js.</p>
+          </div>
+
+          <div class="cv-item">
+            <div class="cv-item-titulo">Dados</div>
+            <p class="cv-item-desc">R, Python, QGIS, ArcGIS, Excel.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
   </div>
 
@@ -608,7 +702,52 @@
     </div>
 
     <!-- overlay estrela -->
-    <div class="reveal-overlay" id="reveal-portfolio"></div>
+    <div class="reveal-overlay" id="reveal-portfolio">
+      <div class="port-conteudo">
+        <div class="port-header"><div class="port-titulo">portfólio</div></div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="treemap_thumb.png" alt=""></div>
+            <div class="proj-legenda">treemap — áreas desmatadas.</div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">1.</div>
+            <div class="proj-titulo">Treemap uso e cobertura do solo</div>
+            <p class="proj-corpo">Visualização dos dados de uso e cobertura do solo do Brasil ao longo de 40 anos.</p>
+            <div class="proj-tools">R · Figma · p5.js · 2025</div>
+            <a href="portfolio/treemap/treemap.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="cachaca_thumb.png" alt=""></div>
+            <div class="proj-legenda">metrô linha amarela em loop.</div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">2.</div>
+            <div class="proj-titulo">Cachaça na cabeça e a linha amarela do metrô</div>
+            <p class="proj-corpo">Você encarou a estampa do estofado do metrô da linha amarela de SP quando tava com birita na cabeça? Eu vejo assim.</p>
+            <div class="proj-tools">p5.js · 2025</div>
+            <a href="/portfolio/cachaca/cachaca.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+
+        <div class="projeto">
+          <div class="proj-img">
+            <div class="proj-img-box"><img src="pastagem_thumb.png" alt=""></div>
+          </div>
+          <div class="proj-texto">
+            <div class="proj-numero">3.</div>
+            <div class="proj-titulo">Mapa de degradação de pastagem</div>
+            <p class="proj-corpo">Sabemos que tem áreas de pastagem, mas quanto dela está degradada?</p>
+            <div class="proj-tools">QGIS · Python · MapBiomas · 2023</div>
+            <a href="/portfolio/pastagem/pastagem.html" class="proj-link">ver projeto →</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -786,6 +925,12 @@
   /* ══════════════════════════════════════
      CITAÇÃO — clique para revelar/esconder
   ══════════════════════════════════════ */
+  const citacaoBase = document.getElementById('citacao-base');
+  citacaoBase.addEventListener('click', (e) => {
+    e.stopPropagation(); // não dispara o carimbo
+    citacaoBase.classList.toggle('visivel');
+  });
+
   colHome.addEventListener('click',      (e) => criarCarimbo(e.clientX, e.clientY, 'home'));
   colCurriculo.addEventListener('click', (e) => criarCarimbo(e.clientX, e.clientY, 'curriculo'));
   colPortfolio.addEventListener('click', (e) => criarCarimbo(e.clientX, e.clientY, 'portfolio'));

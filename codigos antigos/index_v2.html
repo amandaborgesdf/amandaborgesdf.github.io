@@ -56,33 +56,13 @@
     /* ════════════════════════════
        COL 1 — home
     ════════════════════════════ */
-    .stack-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: grid;
-      place-items: start start;
-    }
-
-    .layer {
-      grid-area: 1 / 1;
-      width: 100%;
-      height: 100%;
+    .home-conteudo {
+      padding: .5rem 1rem;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start;
-      padding: .5rem 1rem;
     }
-
-    .reveal-layer {
-      z-index: 2;
-      color: #ffffff;
-      background-color: #000000;
-      pointer-events: none;
-      clip-path: polygon(0 0, 0 0, 0 0);
-    }
-    .base-layer { z-index: 1; }
 
     .estatistica {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -92,7 +72,6 @@
       color: #aaa;
       margin-bottom: .15rem;
     }
-    .reveal-layer .estatistica { color: #666; }
 
     h1 {
       font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -120,34 +99,19 @@
       letter-spacing: .01em;
     }
 
-    /* Na camada de revelação (preta), tornamos o texto geral invisível */
-.reveal-citacao {
-  color: transparent !important; /* Esconde conectivos e substantivos */
-}
-
-/* Apenas os spans com a classe v-ativo (verbos) serão mostrados */
-.reveal-citacao span.v-ativo {
-  color: #ffffff !important; /* Verbos aparecem em branco no círculo */
-  transition: color 0.3s ease;
-}
-    }
-    .reveal-citacao .citacao-autor {
-      color: #555;
-    }
-
-    /* base-layer: citação sempre visível */
-    .aspas-fixed {
-      color: #bbb;
-    }
+    .aspas-fixed { color: #bbb; }
     #citacao-base .citacao-corpo { color: #888; }
     #citacao-base .citacao-autor { color: #aaa; }
+
+    /* hover: esconde texto corrido, expõe só os verbos */
+    .col-home.is-hovering #citacao-base .citacao-corpo { color: transparent; }
+    .col-home.is-hovering #citacao-base .citacao-corpo .v-ativo { color: #000; }
 
     .citacao-autor {
       display: block;
       margin-top: .4em;
       font-style: normal;
       font-size: 10.5px;
-      
       color: #aaa;
     }
 
@@ -162,14 +126,13 @@
       width: 100%; height: 100%;
       object-fit: cover; display: block;
     }
-    .base-layer img    { filter: grayscale(20%); }
+    #home-foto { filter: grayscale(20%); }
 
     .foto-citacao a {
       color: inherit;
       text-decoration: none;
     }
     .foto-citacao a:hover { opacity: .7; }
-    .reveal-layer img  { filter: invert(1) grayscale(1); }
 
     nav { display: flex; flex-direction: column; gap: 0; }
     nav a {
@@ -177,21 +140,19 @@
       font-size: .6rem;
       letter-spacing: .08em;
       text-transform: uppercase;
-      color: inherit;
+      color: #555;
       line-height: 1.8;
     }
-    .base-layer nav a  { color: #555; }
-    .reveal-layer nav a { color: #aaa; }
 
-    .base-layer .descricao { display: none; }
-    .reveal-layer .descricao {
+    .descricao { display: none; }
+    .col-home.is-hovering .descricao {
       display: inline;
       font-family: 'Libre Baskerville', Times, serif;
       font-style: italic;
       font-size: .62rem;
       letter-spacing: .02em;
       text-transform: none;
-      color: #666;
+      color: #888;
       margin-left: .3em;
     }
 
@@ -378,9 +339,7 @@
       .pagina { grid-template-columns: 1fr; height: auto; }
       .col-home { border-right: none; border-bottom: none; height: auto; }
       .col-curriculo { border-right: none; border-bottom: none; }
-      .stack-container { height: auto; }
-      .layer { position: relative; height: auto; }
-      .reveal-layer, .reveal-overlay { display: none; }
+      .reveal-overlay { display: none; }
       .col-portfolio { overflow-y: visible; }
       .projeto { grid-template-columns: 1fr; }
       .proj-img-box { width: 100%; height: 140px; }
@@ -397,79 +356,34 @@
        COL 1: HOME
   ══════════════════════════ -->
   <div class="col-home" id="col-home">
-    <div class="stack-container">
-
-      <div class="layer base-layer">
-        <p class="estatistica">no rj as vezes em sp do piauí e do ceará </p>
-        <h1>Amanda Borges da Fonseca</h1>
-        <div class="photo-row">
-          <div class="photo-wrapper">
-            <img src="media/other/18102334717840247.png" alt="Amanda Borges">
-          </div>
-        </div>
-        <div class="foto-citacao" style="margin-top:.4rem; color:#888; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
-          Curiosamente curiosa e obsessivamente obcecada (só às vezes).
-          Mestranda em Design pela UFRJ, pensando visualização de dados como assistente de pesquisa no NetLab.
-          Estudo o processo criativo em visualização de dados (às vezes IA também).
-          Em outras vidas já fui :
-          <a href="gestora_ambiental.jpg" target="_blank">gestora ambiental pela USP</a> (mas só me sobrou o veganismo e a ansiedade climática),
-          <a href="kpopper.png" target="_blank">kpopper,</a>
-          <a href="atriz de teatro musical.jpg" target="_blank">atriz de teatro musical,</a>
-          <a href="turma do pedal.png" target="_blank"> e da turma do pedal</a>
-        </div>
-        <nav>
-          <a href="sobre/sobre.html">pessoal</a>
-          <a href="blog/blog.html">blog</a>
-          <a href="arquivo de fotos/index.html">fototeca</a>
-        </nav>
-        <div class="foto-citacao" id="citacao-base">
-          <span class="aspas-fixed">"</span><span class="citacao-corpo">A experiência, a possibilidade de que algo nos aconteça ou nos toque, requer um gesto de interrupção, um gesto que é quase impossível nos tempos que correm: requer parar para pensar, parar para olhar, parar para escutar, pensar mais devagar, olhar mais devagar, e escutar mais devagar; parar para sentir, sentir mais devagar, demorar-se nos detalhes, suspender a opinião, suspender o juízo, suspender a vontade, suspender o automatismo da ação, cultivar a atenção e a delicadeza, abrir os olhos e os ouvidos, falar sobre o que nos acontece, aprender a lentidão, escutar aos outros, cultivar a arte do encontro, calar muito, ter paciência e dar-se tempo e espaço."</span> <span class="citacao-autor">— Jorge Larrosa Bondía</span>
+    <div class="home-conteudo">
+      <p class="estatistica" id="home-estatistica">no rj as vezes em sp do piauí e do ceará</p>
+      <h1>Amanda Borges da Fonseca</h1>
+      <div class="photo-row">
+        <div class="photo-wrapper">
+          <img id="home-foto" src="media/other/18102334717840247.png" data-src-reveal="media/other/18102334717840247.jpg" alt="Amanda Borges">
         </div>
       </div>
-
-      <div class="layer reveal-layer" id="reveal-home">
-        <p class="estatistica">estatisticamente, no Brasil existem cerca de 6 a 7</p>
-        <h1>Amanda Borges da Fonseca</h1>
-        <div class="photo-row">
-          <div class="photo-wrapper">
-            <img src="media/other/18102334717840247.png" alt="">
-          </div>
-        </div>
-        <div class="foto-citacao" style="margin-top:.4rem; color:#555; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
-          Curiosamente curiosa e obsessivamente obcecada (só às vezes).
-          Mestranda em Design pela UFRJ, pensando visualização de dados como assistente de pesquisa no NetLab.
-          Estudo o processo criativo em visualização de dados (às vezes IA também).
-          Em outras vidas já fui :
-          <a href="gestora_ambiental.jpg" target="_blank">gestora ambiental pela USP</a> (mas só me sobrou o veganismo e a ansiedade climática),
-          <a href="kpopper.png" target="_blank">kpopper,</a>
-          <a href="atriz de teatro musical.jpg" target="_blank">atriz de teatro musical</a>
-          <a href="turma do pedal.png" target="_blank">e da turma do pedal,</a>
-        </div>
-        <nav>
-          <a>pessoal <span class="descricao">(aqui eu brinco)</span></a>
-          <a>blog <span class="descricao">(aqui eu escrevo)</span></a>
-          <a>fototeca <span class="descricao">(aqui eu registro)</span></a>
-        </nav>
-        <div class="foto-citacao reveal-citacao">
-  "A experiência, a possibilidade de que algo nos aconteça ou nos toque, 
-  <span class="v-ativo">requer</span> <span class="v-ativo">parar</span> para <span class="v-ativo">pensar</span>, 
-  <span class="v-ativo">parar</span> para <span class="v-ativo">olhar</span>, 
-  <span class="v-ativo">parar</span> para <span class="v-ativo">escutar</span>, 
-  <span class="v-ativo">pensar</span> mais devagar, <span class="v-ativo">olhar</span> mais devagar, e 
-  <span class="v-ativo">escutar</span> mais devagar; <span class="v-ativo">parar</span> para <span class="v-ativo">sentir</span>, 
-  <span class="v-ativo">sentir</span> mais devagar, <span class="v-ativo">demorar-se</span> nos detalhes, 
-  <span class="v-ativo">suspender</span> a opinião, <span class="v-ativo">suspender</span> o juízo, 
-  <span class="v-ativo">suspender</span> a vontade, <span class="v-ativo">suspender</span> o automatismo da ação, 
-  <span class="v-ativo">cultivar</span> a atenção e a delicadeza, <span class="v-ativo">abrir</span> os olhos e os ouvidos, 
-  <span class="v-ativo">falar</span> sobre o que nos <span class="v-ativo">acontece</span>, 
-  <span class="v-ativo">aprender</span> a lentidão, <span class="v-ativo">escutar</span> aos outros, 
-  <span class="v-ativo">cultivar</span> a arte do encontro, <span class="v-ativo">calar</span> muito, 
-  <span class="v-ativo">ter</span> paciência e <span class="v-ativo">dar-se</span> tempo e espaço."
-  <span class="citacao-autor">— Jorge Larrosa Bondía</span>
-</div>
+      <div class="foto-citacao" style="margin-top:.4rem; color:#888; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size:10.5px; line-height:1.6; font-style:normal;">
+        Curiosamente curiosa e obsessivamente obcecada (só às vezes).
+        Mestranda em Design pela UFRJ, pensando visualização de dados como assistente de pesquisa no NetLab.
+        Estudo o processo criativo em visualização de dados (às vezes IA também).
+        Em outras vidas já fui :
+        <a href="gestora_ambiental.jpg" target="_blank">gestora ambiental pela USP</a> (mas só me sobrou o veganismo e a ansiedade climática),
+        <a href="kpopper.png" target="_blank">kpopper,</a>
+        <a href="atriz de teatro musical.jpg" target="_blank">atriz de teatro musical,</a>
+        <a href="turma do pedal.png" target="_blank"> e da turma do pedal</a>
       </div>
-
+      <nav>
+        <a href="sobre/sobre.html">pessoal <span class="descricao">(aqui eu brinco)</span></a>
+        <a href="blog/blog.html">blog <span class="descricao">(aqui eu escrevo)</span></a>
+        <a href="arquivo de fotos/index.html">fototeca <span class="descricao">(aqui eu registro)</span></a>
+      </nav>
+      <div class="foto-citacao" id="citacao-base">
+        <span class="aspas-fixed">"</span><span class="citacao-corpo">A experiência, a possibilidade de que algo nos aconteça ou nos toque, <span class="v-ativo">requer</span> um gesto de interrupção, um gesto que é quase impossível nos tempos que correm: <span class="v-ativo">requer</span> <span class="v-ativo">parar</span> para <span class="v-ativo">pensar</span>, <span class="v-ativo">parar</span> para <span class="v-ativo">olhar</span>, <span class="v-ativo">parar</span> para <span class="v-ativo">escutar</span>, <span class="v-ativo">pensar</span> mais devagar, <span class="v-ativo">olhar</span> mais devagar, e <span class="v-ativo">escutar</span> mais devagar; <span class="v-ativo">parar</span> para <span class="v-ativo">sentir</span>, <span class="v-ativo">sentir</span> mais devagar, <span class="v-ativo">demorar-se</span> nos detalhes, <span class="v-ativo">suspender</span> a opinião, <span class="v-ativo">suspender</span> o juízo, <span class="v-ativo">suspender</span> a vontade, <span class="v-ativo">suspender</span> o automatismo da ação, <span class="v-ativo">cultivar</span> a atenção e a delicadeza, <span class="v-ativo">abrir</span> os olhos e os ouvidos, <span class="v-ativo">falar</span> sobre o que nos <span class="v-ativo">acontece</span>, <span class="v-ativo">aprender</span> a lentidão, <span class="v-ativo">escutar</span> aos outros, <span class="v-ativo">cultivar</span> a arte do encontro, <span class="v-ativo">calar</span> muito, <span class="v-ativo">ter</span> paciência e <span class="v-ativo">dar-se</span> tempo e espaço."</span> <span class="citacao-autor">— Jorge Larrosa Bondía</span>
+      </div>
     </div>
+    <div class="reveal-overlay" id="reveal-home"></div>
   </div>
 
   <!-- ══════════════════════════
@@ -762,11 +676,26 @@
   /* ══════════════════════════════════════
      HOVER
   ══════════════════════════════════════ */
+  const homeEstatistica = document.getElementById('home-estatistica');
+  const homeFoto        = document.getElementById('home-foto');
+  const ESTAT_BASE      = 'no rj as vezes em sp do piauí e do ceará';
+  const ESTAT_REVEAL    = 'estatisticamente, no Brasil existem cerca de 6 a 7';
+
   colHome.addEventListener('mousemove', (e) => {
     const { x, y } = localPos(e, colHome);
     revealHome.style.clipPath = circle(x, y);
+    if (!colHome.classList.contains('is-hovering')) {
+      colHome.classList.add('is-hovering');
+      homeEstatistica.textContent = ESTAT_REVEAL;
+      homeFoto.src = homeFoto.dataset.srcReveal;
+    }
   });
-  colHome.addEventListener('mouseleave', () => hide(revealHome));
+  colHome.addEventListener('mouseleave', () => {
+    hide(revealHome);
+    colHome.classList.remove('is-hovering');
+    homeEstatistica.textContent = ESTAT_BASE;
+    homeFoto.src = 'media/other/18102334717840247.png';
+  });
 
   colCurriculo.addEventListener('mousemove', (e) => {
     const { x, y } = localPos(e, colCurriculo);
